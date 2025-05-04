@@ -1,4 +1,4 @@
-package com.example.safeships_flutter
+package com.ppns.safeships
 
 import io.flutter.embedding.android.FlutterActivity
 

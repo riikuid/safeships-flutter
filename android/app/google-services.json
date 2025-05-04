@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "312998252041",
+    "project_id": "safeships-e6716",
+    "storage_bucket": "safeships-e6716.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312998252041:android:e9c738c4272950e6d172d8",
+        "android_client_info": {
+          "package_name": "com.ppns.safeships"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8PJ1LROhFoIhQbLpo6csj3CIlc5pKK9I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
@@ -24,7 +25,7 @@ class AuthService {
     final response =
         await http.post(Uri.parse(url), headers: headers, body: body);
 
-    print(response.body);
+    log(response.body);
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
@@ -48,7 +49,7 @@ class AuthService {
     print(response.body);
 
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body)['user'];
+      var data = jsonDecode(response.body)['data'];
       UserModel user = UserModel.fromJson(data);
       return user;
     } else {

@@ -1,6 +1,11 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
 import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
@@ -29,6 +34,36 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
 
+      String? fcmToken = "";
+
+      FocusScope.of(context).requestFocus(FocusNode());
+      AuthProvider authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+
+      if (Platform.isAndroid) {
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        messaging.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        NotificationSettings settings = await messaging.requestPermission(
+          alert: true,
+          announcement: true,
+          badge: true,
+          carPlay: true,
+          criticalAlert: true,
+          provisional: true,
+          sound: true,
+        );
+        fcmToken = await messaging.getToken();
+        log('User granted permission: ${settings.authorizationStatus}');
+      } else if (Platform.isIOS) {
+        // iOS-specific code
+      }
+
+      log("FCM TOKEN $fcmToken");
+
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
         AuthProvider authProvider =
@@ -38,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
             .login(
           email: emailController.text,
           password: passwordController.text,
-          fcmToken: '',
+          fcmToken: fcmToken!,
           errorCallback: (p0) {
             Fluttertoast.showToast(msg: p0.toString());
           },
@@ -46,13 +81,13 @@ class _LoginPageState extends State<LoginPage> {
             .then(
           (value) {
             if (value) {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => const HomePage(),
-              //   ),
-              //   (route) => false,
-              // );
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+                (route) => false,
+              );
             } else {
               // ThrowSnackbar().showError(context, errorText);
             }
@@ -73,16 +108,16 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 10,
         shadowColor: primaryColor400,
         toolbarHeight: 70,
-        title: Image.asset(
-          'assets/logo.png',
-          height: 30,
-        ),
-        flexibleSpace: const Image(
-          image: AssetImage(
-            'assets/bg_appbar.png',
-          ),
-          fit: BoxFit.cover,
-        ),
+        // title: Image.asset(
+        //   'assets/logo.png',
+        //   height: 30,
+        // ),
+        // flexibleSpace: const Image(
+        //   image: AssetImage(
+        //     'assets/bg_appbar.png',
+        //   ),
+        //   fit: BoxFit.cover,
+        // ),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -105,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 35,
                   ),
                   Text(
-                    'Selamat Datang di GOCAB!',
+                    'Selamat Datang di SafeSHIPS!',
                     style: primaryTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: medium,
@@ -175,37 +210,37 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Belum punya akun?',
-                        style: primaryTextStyle.copyWith(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const RegisterPage(),
-                          //   ),
-                          // );
-                        },
-                        child: Text(
-                          'Yuk daftar!',
-                          style: primaryTextStyle.copyWith(
-                            color: primaryColor500,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       'Belum punya akun?',
+                  //       style: primaryTextStyle.copyWith(
+                  //         fontSize: 12,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 5,
+                  //     ),
+                  //     GestureDetector(
+                  //       onTap: () {
+                  //         // Navigator.pushReplacement(
+                  //         //   context,
+                  //         //   MaterialPageRoute(
+                  //         //     builder: (context) => const RegisterPage(),
+                  //         //   ),
+                  //         // );
+                  //       },
+                  //       child: Text(
+                  //         'Yuk daftar!',
+                  //         style: primaryTextStyle.copyWith(
+                  //           color: primaryColor500,
+                  //           fontSize: 12,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ],

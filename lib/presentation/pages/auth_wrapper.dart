@@ -3,7 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
+import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
+import 'package:safeships_flutter/theme.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -28,27 +32,27 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
       if (success) {
         log("SUKSES BOLO");
-        // Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => HomePage(),
-        //     ));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Dashboard(),
+            ));
       } else {
-        // log("GAISOK ");
-        // Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => LoginPage(),
-        //     ));
+        log("GAISOK ");
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ));
       }
     } else {
       log("TOKEN KOSONG ");
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => const LoginPage(),
-      //   ),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+      );
     }
   }
 
@@ -63,11 +67,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     authCheck();
     return Scaffold(
       body: Center(
-        child: Image.asset(
-          'assets/loader.gif',
-          width: 200,
+          child: Text(
+        'Loading',
+        style: primaryTextStyle.copyWith(
+          fontSize: 18,
+          fontWeight: semibold,
         ),
-      ),
+      )),
     );
   }
 }

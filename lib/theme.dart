@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 // COLOR SCHEME
 Color whiteColor = const Color(0xFFFFFFFF);
-Color blackColor = const Color(0xFF0E0E0E);
+Color blackColor = const Color(0xFF110B0B);
 
 Color subtitleTextColor = const Color(0xFF606060);
 Color hintTextColor = const Color(0xFFBAC2C7);
@@ -13,16 +13,16 @@ Color greyBackgroundColor = const Color(0xFFE5E5E5);
 Color disabledColor = const Color(0xFFC4C4C4);
 Color transparentColor = Colors.transparent;
 
-Color primaryColor50 = const Color(0xFFEBF9EE);
-Color primaryColor100 = const Color(0xFFC0EECC);
-Color primaryColor200 = const Color(0xFFa2e5b3);
-Color primaryColor300 = const Color(0xFF77d990);
-Color primaryColor400 = const Color(0xFF5dd27a);
-Color primaryColor500 = const Color(0xFF34c759);
-Color primaryColor600 = const Color(0xFF2fb551);
-Color primaryColor700 = const Color(0xFF258d3f);
-Color primaryColor800 = const Color(0xFF1d6d31);
-Color primaryColor900 = const Color(0xFF165425);
+Color primaryColor50 = const Color(0xFFedf4fe);
+Color primaryColor100 = const Color(0xFFc8dcfc);
+Color primaryColor200 = const Color(0xFFadcbfa);
+Color primaryColor300 = const Color(0xFF87b3f8);
+Color primaryColor400 = const Color(0xFF70a5f7);
+Color primaryColor500 = const Color(0xFF4c8ef5);
+Color primaryColor600 = const Color(0xFF4581df);
+Color primaryColor700 = const Color(0xFF3665ae);
+Color primaryColor800 = const Color(0xFF2a4e87);
+Color primaryColor900 = const Color(0xFF203c67);
 
 // TEXT STYLE
 TextStyle primaryTextStyle = GoogleFonts.poppins(

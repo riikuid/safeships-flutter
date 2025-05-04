@@ -17,7 +17,7 @@ class DocumentModel {
   final DateTime updatedAt;
   final UserModel user;
   final CategoryModel category;
-  final List<DocumentApprovalModel> documentApprovals;
+  final List<DocumentApprovalModel>? documentApprovals;
 
   DocumentModel({
     required this.id,
@@ -32,13 +32,11 @@ class DocumentModel {
     required this.updatedAt,
     required this.user,
     required this.category,
-    required this.documentApprovals,
+    this.documentApprovals,
   });
 
   factory DocumentModel.fromRawJson(String str) =>
       DocumentModel.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) => DocumentModel(
         id: json["id"],
@@ -57,21 +55,4 @@ class DocumentModel {
             json["document_approvals"]
                 .map((x) => DocumentApprovalModel.fromJson(x))),
       );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "category_id": categoryId,
-        "manager_id": managerId,
-        "file_path": filePath,
-        "title": title,
-        "description": description,
-        "status": status,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "user": user.toJson(),
-        "category": category.toJson(),
-        "document_approvals":
-            List<dynamic>.from(documentApprovals.map((x) => x.toJson())),
-      };
 }
