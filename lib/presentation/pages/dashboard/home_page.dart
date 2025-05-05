@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/models/auth_model.dart';
 import 'package:safeships_flutter/presentation/pages/document/list_category_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel userModel = context.read<AuthProvider>().user;
+    AuthModel authModel = context.read<AuthProvider>().user;
 
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    userModel.name,
+                    authModel.name,
                   )
                 ],
               ),

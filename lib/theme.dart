@@ -8,7 +8,7 @@ Color blackColor = const Color(0xFF110B0B);
 Color subtitleTextColor = const Color(0xFF606060);
 Color hintTextColor = const Color(0xFFBAC2C7);
 
-Color greyBackgroundColor = const Color(0xFFE5E5E5);
+Color greyBackgroundColor = const Color(0xffF8F8F8);
 
 Color disabledColor = const Color(0xFFC4C4C4);
 Color transparentColor = Colors.transparent;

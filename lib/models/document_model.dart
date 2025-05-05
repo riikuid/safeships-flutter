@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/document_approval_model.dart';
-import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/models/auth_model.dart';
 
 class DocumentModel {
   final int id;
@@ -15,7 +15,7 @@ class DocumentModel {
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final UserModel user;
+  final AuthModel? user;
   final CategoryModel category;
   final List<DocumentApprovalModel>? documentApprovals;
 
@@ -30,7 +30,7 @@ class DocumentModel {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
-    required this.user,
+    this.user,
     required this.category,
     this.documentApprovals,
   });
@@ -49,7 +49,7 @@ class DocumentModel {
         status: json["status"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        user: UserModel.fromJson(json["user"]),
+        user: json["status"] != null ? AuthModel.fromJson(json["user"]) : null,
         category: CategoryModel.fromJson(json["category"]),
         documentApprovals: List<DocumentApprovalModel>.from(
             json["document_approvals"]

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/models/auth_model.dart';
 
 class DocumentApprovalModel {
   final int id;
@@ -8,7 +8,7 @@ class DocumentApprovalModel {
   final int approverId;
   final String status;
   final String? comments;
-  final UserModel approver;
+  final AuthModel approver;
 
   DocumentApprovalModel({
     required this.id,
@@ -31,7 +31,7 @@ class DocumentApprovalModel {
         approverId: json["approver_id"],
         status: json["status"],
         comments: json["comments"],
-        approver: UserModel.fromJson(json["approver"]),
+        approver: AuthModel.fromJson(json["approver"]),
       );
 
   Map<String, dynamic> toJson() => {

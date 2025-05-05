@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/models/auth_model.dart';
 import 'package:safeships_flutter/services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  UserModel? _user;
-  UserModel get user => _user!;
+  AuthModel? _user;
+  AuthModel get user => _user!;
 
   Future<bool> login({
     required String email,
@@ -15,7 +15,7 @@ class AuthProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      UserModel data = await AuthService().login(
+      AuthModel data = await AuthService().login(
         email: email,
         password: password,
         fcmToken: fcmToken,
@@ -76,7 +76,7 @@ class AuthProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      UserModel data = await AuthService().authWithToken(token);
+      AuthModel data = await AuthService().authWithToken(token);
 
       _user = data;
       notifyListeners();

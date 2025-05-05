@@ -3,13 +3,13 @@ import 'dart:developer';
 
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
-import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/models/auth_model.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
   TokenRepository tokenRepository = TokenRepository();
 
-  Future<UserModel> login({
+  Future<AuthModel> login({
     required String email,
     required String password,
     required String fcmToken,
@@ -29,7 +29,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      UserModel user = UserModel.fromJson(data['user']);
+      AuthModel user = AuthModel.fromJson(data['user']);
       tokenRepository.putToken(data['token']);
       return user;
     } else {
@@ -37,7 +37,7 @@ class AuthService {
     }
   }
 
-  Future<UserModel> authWithToken(String token) async {
+  Future<AuthModel> authWithToken(String token) async {
     var url = '${ApiEndpoint.baseUrl}/api/user';
     var headers = {
       'Content-Type': 'application/json',
@@ -50,14 +50,14 @@ class AuthService {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body)['data'];
-      UserModel user = UserModel.fromJson(data);
+      AuthModel user = AuthModel.fromJson(data);
       return user;
     } else {
       throw jsonDecode(response.body)['message'];
     }
   }
 
-  // Future<UserModel> register({
+  // Future<AuthModel> register({
   //   required String fullName,
   //   required String email,
   //   required String password,
@@ -85,7 +85,7 @@ class AuthService {
   //   print(response.body);
 
   //   if (response.statusCode == 201) {
-  //     return UserModel.fromJson(jsonDecode(response.body)['user']);
+  //     return AuthModel.fromJson(jsonDecode(response.body)['user']);
   //   } else {
   //     throw jsonDecode(response.body)['message'];
   //   }

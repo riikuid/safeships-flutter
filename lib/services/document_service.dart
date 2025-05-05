@@ -86,4 +86,52 @@ class DocumentService {
       throw jsonDecode(response.body)['message'];
     }
   }
+
+  Future<DocumentModel> ajukanDokumentasiBaru({
+    required String token,
+    required String categoryId,
+    required String managerId,
+    required String title,
+    required String description,
+    required String pathFile,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents';
+
+    var requestMultipart = http.MultipartRequest('POST', Uri.parse(url));
+
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    // Isi field-body dari parameter
+    requestMultipart.fields.addAll({
+      'category_id': categoryId,
+      'manager_id': managerId,
+      'title': title,
+      'description': description,
+    });
+
+    // Tambahkan file
+    var docFile = await http.MultipartFile.fromPath('file', pathFile);
+    requestMultipart.files.add(docFile);
+
+    // Tambahkan headers
+    requestMultipart.headers.addAll(headers);
+
+    // Kirim permintaan
+    var streamedResponse = await requestMultipart.send();
+
+    // Terima respons
+    var response = await http.Response.fromStream(streamedResponse);
+
+    log(response.body);
+
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body)['data'];
+      DocumentModel documents = DocumentModel.fromJson(data);
+      return documents;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
 }

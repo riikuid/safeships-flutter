@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
 
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
+import 'package:safeships_flutter/presentation/pages/document/pengajuan_document_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class CategoryWithDocsCard extends StatelessWidget {
@@ -152,6 +153,14 @@ class CategoryWithDocsCard extends StatelessWidget {
             if (value == 'ajukan') {
               // TODO: Lakukan aksi pengajuan dokumentasi
               print('Ajukan Dokumentasi dipilih');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PengajuanDocumentPage(
+                    parentModel: category,
+                  ),
+                ),
+              );
             } else if (value == 'hapus') {
               // TODO: Lakukan aksi hapus semua dokumentasi
               print('Hapus Semua Dokumentasi dipilih');

@@ -1,29 +1,31 @@
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
-class UserModel {
+class AuthModel {
   final int id;
   final String name;
   final String email;
   final String role;
+  final String? fcmToken;
 
-  UserModel({
+  AuthModel({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
+    this.fcmToken,
   });
 
-  factory UserModel.fromRawJson(String str) =>
-      UserModel.fromJson(json.decode(str));
+  factory AuthModel.fromRawJson(String str) =>
+      AuthModel.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory AuthModel.fromJson(Map<String, dynamic> json) => AuthModel(
         id: json["id"],
         name: json["name"],
         email: json["email"],
         role: json["role"],
+        fcmToken: json["fcm_token"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -31,5 +33,6 @@ class UserModel {
         "name": name,
         "email": email,
         "role": role,
+        "fcm_token": fcmToken,
       };
 }

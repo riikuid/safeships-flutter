@@ -7,6 +7,7 @@ import 'package:safeships_flutter/presentation/pages/auth_wrapper.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
+import 'package:safeships_flutter/providers/user_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
 void main() async {
@@ -38,6 +39,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => DashboardProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
         ),
       ],
       child: MaterialApp(

@@ -42,7 +42,7 @@ class CategoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: greyBackgroundColor.withOpacity(0.5),
+                color: greyBackgroundColor,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(8.0),
                 ),
