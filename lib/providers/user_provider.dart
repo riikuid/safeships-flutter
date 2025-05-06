@@ -29,4 +29,9 @@ class UserProvider with ChangeNotifier {
       log('error get categories: $error');
     }
   }
+
+  void resetManager() {
+    _managers = [];
+    notifyListeners();
+  }
 }

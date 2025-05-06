@@ -10,7 +10,7 @@ class UserService {
     required String token,
     String? role,
   }) async {
-    var url = '${ApiEndpoint.baseUrl}/api/user?role=$role';
+    var url = '${ApiEndpoint.baseUrl}/api/users?role=$role';
     var headers = {
       'Authorization': 'Bearer $token',
     };
@@ -19,6 +19,8 @@ class UserService {
       Uri.parse(url),
       headers: headers,
     );
+
+    print('tes');
 
     log(response.body);
 

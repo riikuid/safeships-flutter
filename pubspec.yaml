@@ -45,6 +45,7 @@ dependencies:
   firebase_messaging: ^15.2.5
   shimmer: ^3.0.0
   dropdown_search: ^6.0.2
+  file_picker: ^10.1.2
 
 dev_dependencies:
   flutter_test:

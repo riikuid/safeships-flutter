@@ -1,8 +1,11 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
+import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/user_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
@@ -15,8 +18,105 @@ class PengajuanDocumentPage extends StatefulWidget {
 }
 
 class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
+  PlatformFile? selectedFile;
+
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      setState(() {
+        selectedFile = file;
+      });
+    }
+  }
+
+  void _deleteFile() {
+    setState(() {
+      selectedFile = null;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // context.read<UserProvider>().resetManager();
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget pickFileField() {
+      if (selectedFile == null) {
+        return PrimaryButton(
+          elevation: 1,
+          width: double.infinity,
+          height: 50,
+          color: whiteColor,
+          borderColor: disabledColor,
+          onPressed: _pickFile,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.description_outlined,
+                color: subtitleTextColor,
+                size: 18,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                "Choose File",
+                style: primaryTextStyle.copyWith(
+                  color: subtitleTextColor,
+                  fontWeight: semibold,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Container(
+          width: double.infinity,
+          height: 50,
+          decoration: BoxDecoration(
+            color: whiteColor,
+            border: Border.all(color: disabledColor),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.description_outlined,
+                    color: subtitleTextColor,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      selectedFile!.name,
+                      style: primaryTextStyle.copyWith(
+                        color: subtitleTextColor,
+                        fontWeight: semibold,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              IconButton(
+                icon: Icon(Icons.close, color: subtitleTextColor, size: 18),
+                onPressed: _deleteFile,
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: greyBackgroundColor,
       appBar: AppBar(
@@ -101,60 +201,268 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
               ),
             ),
             Container(
-              height: 200,
-              child: DropdownSearch<UserModel>(
-                items: (String filter, s) async {
-                  List<UserModel> managers =
-                      context.read<UserProvider>().managers;
-                  // Jika managers kosong, panggil getManagers
-                  if (managers.isEmpty) {
-                    await context.read<UserProvider>().getManagers();
-                  }
-                  // Filter berdasarkan nama jika diperlukan
-                  return managers
-                      .where((user) => user.name
-                          .toLowerCase()
-                          .contains(filter.toLowerCase()))
-                      .toList();
-                },
-                itemAsString: (UserModel? user) =>
-                    user?.name ?? '', // Menampilkan nama
-                onChanged: (UserModel? selectedUser) {
-                  if (selectedUser != null) {
-                    // Gunakan selectedUser.id untuk keperluan Anda
-                    print('Selected ID: ${selectedUser.id}');
-                  }
-                },
-                popupProps: PopupProps.menu(
-                  showSearchBox: true,
-                  searchFieldProps: TextFieldProps(
-                    decoration: InputDecoration(
-                      labelText: 'Cari Manager',
-                      border: OutlineInputBorder(),
+              width: double.infinity,
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.all(
+                  const Radius.circular(12.0),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'File',
+                    style: primaryTextStyle.copyWith(
+                      color: blackColor,
+                      fontSize: 12,
                     ),
                   ),
-                  itemBuilder: (context, UserModel item, bool isSelected, _) {
-                    return ListTile(
-                      title: Text(item.name),
-                      selected: isSelected,
-                    );
-                  },
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  // PrimaryButton(
+                  //   elevation: 1,
+                  //   width: double.infinity,
+                  //   height: 50,
+                  //   color: whiteColor,
+                  //   borderColor: disabledColor,
+                  //   onPressed: () {},
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Icon(
+                  //         Icons.description_outlined,
+                  //         color: subtitleTextColor,
+                  //         size: 18,
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 5,
+                  //       ),
+                  //       Text(
+                  //         "Choose File",
+                  //         style: primaryTextStyle.copyWith(
+                  //           color: subtitleTextColor,
+                  //           fontWeight: semibold,
+                  //           fontSize: 12,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  pickFileField(),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomTextField(
+                    labelText: 'Judul',
+                    hintText: '',
+                    keyboardType: TextInputType.name,
+                    controller: TextEditingController(),
+                    textFieldType: CustomTextFieldType.outline,
+                    fillColor: whiteColor,
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomTextField(
+                    labelText: 'Deskripsi',
+                    hintText: '',
+                    keyboardType: TextInputType.name,
+                    controller: TextEditingController(),
+                    textFieldType: CustomTextFieldType.outline,
+                    fillColor: whiteColor,
+                    isTextArea: true,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 15,
+              ),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(12.0),
                 ),
-                // dropdownDecoratorProps: DropDownDecoratorProps(
-                //   dropdownSearchDecoration: InputDecoration(
-                //     labelText: 'Pilih Manager',
-                //     border: OutlineInputBorder(),
-                //   ),
-                // ),
-                validator: (UserModel? value) {
-                  if (value == null) {
-                    return 'Pilih salah satu manager';
-                  }
-                  return null;
-                },
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Manajer',
+                    style: primaryTextStyle.copyWith(
+                      color: blackColor,
+                      // fontWeight: ,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  DropdownSearch<UserModel>(
+                    items: (String filter, LoadProps? loadProps) async {
+                      List<UserModel> managers =
+                          context.read<UserProvider>().managers;
+                      if (managers.isEmpty) {
+                        await context.read<UserProvider>().getManagers();
+                      }
+                      return managers
+                          .where((user) => user.name
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                          .toList();
+                    },
+                    compareFn: (UserModel? a, UserModel? b) => a?.id == b?.id,
+                    itemAsString: (UserModel? user) => user?.name ?? '',
+                    onChanged: (UserModel? selectedUser) {
+                      if (selectedUser != null) {
+                        print('Selected ID: ${selectedUser.id}');
+                      }
+                    },
+                    popupProps: PopupProps.modalBottomSheet(
+                      showSelectedItems: true,
+                      modalBottomSheetProps: ModalBottomSheetProps(
+                        padding: const EdgeInsets.all(50),
+                        backgroundColor: whiteColor,
+                        elevation: 2,
+                        showDragHandle: true,
+                      ),
+                      showSearchBox: true,
+                      // title: Text(
+                      //   'Pilih Manajer',
+                      //   style: primaryTextStyle.copyWith(),
+                      // ),
+
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: whiteColor,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 12,
+                          ),
+                          hintText: 'Cari nama manajer',
+                          hintStyle: primaryTextStyle.copyWith(
+                            color: blackColor.withOpacity(0.5),
+                            fontSize: 12,
+                            fontWeight: medium,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                            borderSide: BorderSide(
+                              color: disabledColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                            borderSide: BorderSide(
+                              color: primaryColor500,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      itemBuilder:
+                          (context, UserModel item, bool _, bool isSelected) {
+                        return ListTile(
+                          leading: Icon(
+                            Icons.person_2,
+                            size: 20,
+                            color: isSelected
+                                ? primaryColor800
+                                : subtitleTextColor,
+                          ),
+                          title: Text(
+                            item.name,
+                            style: primaryTextStyle.copyWith(
+                              fontSize: 12,
+                              fontWeight: isSelected ? semibold : regular,
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedTileColor: primaryColor50,
+                        );
+                      },
+                    ),
+                    decoratorProps: DropDownDecoratorProps(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: whiteColor,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 12,
+                        ),
+                        hintText: 'Pilih Manajer',
+                        hintStyle: primaryTextStyle.copyWith(
+                          color: blackColor.withOpacity(0.5),
+                          fontSize: 12,
+                          fontWeight: medium,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(8),
+                          ),
+                          borderSide: BorderSide(
+                            color: disabledColor,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8),
+                          ),
+                          borderSide: BorderSide(
+                            color: primaryColor500,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    validator: (UserModel? value) {
+                      if (value == null) {
+                        return 'Pilih salah satu manager';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
             )
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: whiteColor,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x19000000),
+              blurRadius: 24,
+              offset: Offset(0, 11),
+            ),
+          ],
+        ),
+        child: PrimaryButton(
+          child: Text(
+            'Submit',
+            style: primaryTextStyle.copyWith(
+              color: whiteColor,
+              fontWeight: semibold,
+            ),
+          ),
+          onPressed: () {},
         ),
       ),
     );
