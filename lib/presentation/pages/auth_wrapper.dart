@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
 import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
-import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
@@ -26,7 +25,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     final token = await tokenRepository.getToken();
     log(token.toString());
 
-    if (token != null) {
+    if (token != null) { 
       log("TOKEN ONOK");
       bool success = await authProvider.getProfile(token: token);
 

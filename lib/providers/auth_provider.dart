@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class AuthProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
+      log('masuk');
       AuthModel data = await AuthService().login(
         email: email,
         password: password,
@@ -23,6 +25,28 @@ class AuthProvider with ChangeNotifier {
 
       _user = data;
       notifyListeners();
+
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> logout({
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      log('logout');
+      bool result = await AuthService().logout();
+
+      if (result) {
+        _user = null;
+        notifyListeners();
+      }
 
       return true;
     } on SocketException {

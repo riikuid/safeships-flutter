@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/category_model.dart';
@@ -87,7 +88,7 @@ class DocumentService {
     }
   }
 
-  Future<DocumentModel> ajukanDokumentasiBaru({
+  Future<bool> ajukanDokumentasiBaru({
     required String token,
     required String categoryId,
     required String managerId,
@@ -127,6 +128,65 @@ class DocumentService {
     log(response.body);
 
     if (response.statusCode == 201) {
+      // final data = jsonDecode(response.body)['data'];
+      // DocumentModel documents = DocumentModel.fromJson(data);
+      return true;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  Future<DocumentModel> approveDocument({
+    required String token,
+    required int documentId,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/$documentId/approve';
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      DocumentModel documents = DocumentModel.fromJson(data);
+      return documents;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  Future<DocumentModel> rejectDocument({
+    required String token,
+    required int documentId,
+    required String comments,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/$documentId/reject';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    var body = jsonEncode({
+      'comments': comments,
+    });
+
+    log(body.toString());
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: body,
+    );
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
       DocumentModel documents = DocumentModel.fromJson(data);
       return documents;

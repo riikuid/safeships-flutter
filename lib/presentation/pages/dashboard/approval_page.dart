@@ -30,6 +30,7 @@ class _ApprovalPageState extends State<ApprovalPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: greyBackgroundColor,
       appBar: AppBar(
         backgroundColor: primaryColor500,
         title: Text(

@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
 import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
@@ -84,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const HomePage(),
+                  builder: (context) => const Dashboard(),
                 ),
                 (route) => false,
               );
@@ -108,17 +109,20 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 10,
         shadowColor: primaryColor400,
         toolbarHeight: 70,
-        // title: Image.asset(
-        //   'assets/logo.png',
-        //   height: 30,
-        // ),
+        title: Text(
+          'SafeSHIPS',
+          style: primaryTextStyle.copyWith(
+            color: whiteColor,
+            fontWeight: semibold,
+          ),
+        ),
         // flexibleSpace: const Image(
         //   image: AssetImage(
         //     'assets/bg_appbar.png',
         //   ),
         //   fit: BoxFit.cover,
         // ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: primaryColor500,
       ),
       body: SingleChildScrollView(
         controller: ScrollController(),

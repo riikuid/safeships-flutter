@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/models/user_model.dart';
+import 'package:safeships_flutter/presentation/widgets/document_approval_card.dart';
+import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 import 'package:shimmer/shimmer.dart';
@@ -96,27 +99,12 @@ class _ApprovalDocumentPageState extends State<ApprovalDocumentPage> {
                           },
                           color: primaryColor500,
                           child: ListView(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             children: documentProvider.documentsManagerial
-                                .map(
-                                  (doc) => ListTile(
-                                    title: Text(doc.title),
-                                    subtitle: Text(doc.status),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.check_circle,
-                                          color: Colors.green),
-                                      onPressed: () {
-                                        // Implement approval logic
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text('Approved Document ')),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                )
+                                .map((doc) => DocumentApprovalCard(
+                                      doc: doc,
+                                      userId:
+                                          context.read<AuthProvider>().user.id,
+                                    ))
                                 // .where(
                                 //   (item) =>
                                 //       item.category.name.toLowerCase().contains(

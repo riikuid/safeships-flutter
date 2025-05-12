@@ -94,8 +94,11 @@ class CategoryWithDocsCard extends StatelessWidget {
                           itemCount: category.items.length,
                           itemBuilder: (context, index) {
                             return ListTile(
-                              leading: AppHelper.getFileIcon(
-                                category.items[index].filePath,
+                              leading: Icon(
+                                AppHelper.getFileIcon(
+                                  category.items[index].filePath,
+                                ),
+                                color: subtitleTextColor,
                               ),
                               onTap: () {
                                 print(category.items[index].title);

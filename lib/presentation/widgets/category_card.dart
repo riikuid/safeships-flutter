@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +22,7 @@ class CategoryCard extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: whiteColor,
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(12.0),
         ),
       ),
@@ -54,6 +56,7 @@ class CategoryCard extends StatelessWidget {
                 itemCount:
                     category.children != null ? category.children!.length : 0,
                 itemBuilder: (context, index) {
+                  // log('ID CATEGORY: ${category.children![index].id}');
                   return ListTile(
                     leading: Icon(
                       Icons.folder,

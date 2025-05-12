@@ -24,6 +24,10 @@ Color primaryColor700 = const Color(0xFF3665ae);
 Color primaryColor800 = const Color(0xFF2a4e87);
 Color primaryColor900 = const Color(0xFF203c67);
 
+Color greenLableColor = const Color(0xFF00D26E);
+Color orangeLableColor = const Color(0xFFFA9F3C);
+Color redLableColor = const Color(0xFFFB7375);
+
 // TEXT STYLE
 TextStyle primaryTextStyle = GoogleFonts.poppins(
   color: blackColor,

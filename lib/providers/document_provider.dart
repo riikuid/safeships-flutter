@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:safeships_flutter/common/token_repository.dart';
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
+import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/services/document_service.dart';
+import 'package:safeships_flutter/services/user_service.dart';
 
 class DocumentProvider with ChangeNotifier {
   final TokenRepository tokenRepository = TokenRepository();
@@ -20,11 +23,8 @@ class DocumentProvider with ChangeNotifier {
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
 
-  final int _limit = 10;
-  int _page = 1;
-  bool hasMore = true;
-
-  bool serviceLoading = false;
+  List<UserModel> _managers = [];
+  List<UserModel> get managers => _managers;
 
   final DocumentService _documentService = DocumentService();
 
@@ -87,6 +87,116 @@ class DocumentProvider with ChangeNotifier {
       if (kDebugMode) log(error.toString());
       errorCallback?.call(error);
     }
+  }
+
+  Future<bool> ajukanDokumentasiBaru({
+    required String categoryId,
+    required String managerId,
+    required String title,
+    required String description,
+    required String pathFile,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      log('masuk');
+      bool result = await _documentService.ajukanDokumentasiBaru(
+        token: (await tokenRepository.getToken())!,
+        categoryId: categoryId,
+        managerId: managerId,
+        title: title,
+        description: description,
+        pathFile: pathFile,
+      );
+
+      notifyListeners();
+
+      return result;
+    } on SocketException {
+      errorCallback?.call("Terjadi Kesalahan Koneksi");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> approveDocument({
+    required int documentId,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      DocumentModel result = await _documentService.approveDocument(
+        token: (await tokenRepository.getToken())!,
+        documentId: documentId,
+      );
+
+      _documentsManagerial = _documentsManagerial.map((doc) {
+        if (doc.id == result.id) {
+          return result;
+        } else {
+          return doc;
+        }
+      }).toList();
+
+      notifyListeners();
+
+      return true;
+    } catch (error) {
+      if (kDebugMode) log(error.toString());
+      errorCallback?.call(error);
+      return false;
+    }
+  }
+
+  Future<bool> rejectDocument({
+    required int documentId,
+    required String comments,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      DocumentModel result = await _documentService.rejectDocument(
+        comments: comments,
+        token: (await tokenRepository.getToken())!,
+        documentId: documentId,
+      );
+
+      _documentsManagerial = _documentsManagerial.map((doc) {
+        if (doc.id == result.id) {
+          return result;
+        } else {
+          return doc;
+        }
+      }).toList();
+
+      notifyListeners();
+      return true;
+    } catch (error) {
+      if (kDebugMode) log(error.toString());
+      errorCallback?.call(error);
+      return false;
+    }
+  }
+
+  Future<void> getManagers({
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      List<UserModel> result = await UserService().getUsers(
+        token: (await tokenRepository.getToken())!,
+        role: 'manager',
+      );
+
+      _managers = result;
+      notifyListeners();
+    } catch (error) {
+      if (kDebugMode) log('Error fetching users: $error');
+      errorCallback?.call(error);
+    }
+  }
+
+  void resetManager() {
+    _managers = [];
+    notifyListeners();
   }
 
   // Future getDocuments({

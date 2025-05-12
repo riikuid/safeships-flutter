@@ -16,12 +16,16 @@ class AuthService {
   }) async {
     tokenRepository.clearToken();
     var url = '${ApiEndpoint.baseUrl}/api/login';
-    var headers = {'Content-Type': 'application/json'};
+    var headers = {
+      'Content-Type': 'application/json',
+    };
     var body = jsonEncode({
       'email': email,
       'password': password,
       'fcm_token': fcmToken,
     });
+    log('service body $body');
+
     final response =
         await http.post(Uri.parse(url), headers: headers, body: body);
 
@@ -32,6 +36,29 @@ class AuthService {
       AuthModel user = AuthModel.fromJson(data['user']);
       tokenRepository.putToken(data['token']);
       return user;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  Future<bool> logout() async {
+    var url = '${ApiEndpoint.baseUrl}/api/logout';
+
+    String token = (await tokenRepository.getToken())!;
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
+      tokenRepository.clearToken();
+      return true;
     } else {
       throw jsonDecode(response.body)['message'];
     }

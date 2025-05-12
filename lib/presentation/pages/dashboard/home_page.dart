@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthModel authModel = context.read<AuthProvider>().user;
+    // AuthModel authModel = context.read<AuthProvider>().user;
 
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
@@ -32,20 +32,20 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                right: 20,
-                left: 20,
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    authModel.name,
-                  )
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.only(
+            //     top: 20,
+            //     right: 20,
+            //     left: 20,
+            //   ),
+            //   child: Column(
+            //     children: [
+            //       Text(
+            //         authModel.name,
+            //       )
+            //     ],
+            //   ),
+            // ),
             Container(
               // width: double.infinity,
               margin: const EdgeInsets.symmetric(

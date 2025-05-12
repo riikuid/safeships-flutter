@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/inbox_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class DashboardProvider with ChangeNotifier {
@@ -41,7 +42,7 @@ class DashboardProvider with ChangeNotifier {
         Icons.archive_rounded,
         color: primaryColor800,
       ),
-      const HomePage(),
+      const InboxPage(),
     ],
   ];
 

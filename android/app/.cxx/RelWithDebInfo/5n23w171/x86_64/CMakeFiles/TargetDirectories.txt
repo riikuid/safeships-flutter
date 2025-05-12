@@ -1,0 +1,2 @@
+/Users/riiku/localstr/safeships_flutter/android/app/.cxx/RelWithDebInfo/5n23w171/x86_64/CMakeFiles/edit_cache.dir
+/Users/riiku/localstr/safeships_flutter/android/app/.cxx/RelWithDebInfo/5n23w171/x86_64/CMakeFiles/rebuild_cache.dir
