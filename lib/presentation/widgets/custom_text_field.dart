@@ -33,6 +33,7 @@ class CustomTextField extends StatelessWidget {
   final Color? borderColor;
   final CustomTextFieldType? textFieldType;
   final bool isTextArea; // Tambahkan parameter ini
+  final bool? enabled; // Tambahkan parameter ini
   final List<TextInputFormatter>? inputFormatters; // Tambahkan parameter ini
 
   const CustomTextField({
@@ -63,7 +64,8 @@ class CustomTextField extends StatelessWidget {
     this.borderColor = const Color(0xFFC4C4C4),
     this.fillColor = const Color(0xFFE8F6FA),
     this.isTextArea = false,
-    this.inputFormatters, // Nilai default false
+    this.inputFormatters,
+    this.enabled = true, // Nilai default false
   });
 
   @override
@@ -127,6 +129,7 @@ class CustomTextField extends StatelessWidget {
                 : Colors.transparent,
           ),
           child: TextField(
+            enabled: enabled,
             focusNode: focusNode,
             onTapOutside: onTapOutside,
             onTap: isPicker! ? pickerFunction : null,
@@ -143,12 +146,13 @@ class CustomTextField extends StatelessWidget {
             style: style ??
                 primaryTextStyle.copyWith(
                   fontSize: 12,
+                  color: enabled! ? blackColor : subtitleTextColor,
                 ),
 
             textInputAction: textInputAction,
             decoration: InputDecoration(
               filled: true,
-              fillColor: fillColor,
+              fillColor: enabled! ? fillColor : disabledColor.withOpacity(0.5),
               error: enableError! ? Text(errorText!) : null,
               errorBorder: enableError!
                   ? textFieldType == CustomTextFieldType.underline
@@ -181,6 +185,20 @@ class CustomTextField extends StatelessWidget {
                     fontWeight: medium,
                   ),
               enabledBorder: textFieldType == CustomTextFieldType.underline
+                  ? UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: disabledColor,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(borderRadius ?? 8),
+                      ),
+                      borderSide: BorderSide(
+                        color: borderColor ?? disabledColor,
+                      ),
+                    ),
+              disabledBorder: textFieldType == CustomTextFieldType.underline
                   ? UnderlineInputBorder(
                       borderSide: BorderSide(
                         color: disabledColor,

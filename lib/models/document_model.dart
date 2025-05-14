@@ -49,7 +49,7 @@ class DocumentModel {
         status: json["status"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        user: json["status"] != null ? AuthModel.fromJson(json["user"]) : null,
+        user: json["user"] != null ? AuthModel.fromJson(json["user"]) : null,
         category: CategoryModel.fromJson(json["category"]),
         documentApprovals: List<DocumentApprovalModel>.from(
             json["document_approvals"]

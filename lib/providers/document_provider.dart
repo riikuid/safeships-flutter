@@ -7,6 +7,7 @@ import 'package:safeships_flutter/common/token_repository.dart';
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
+import 'package:safeships_flutter/models/manager_model.dart';
 import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/services/document_service.dart';
 import 'package:safeships_flutter/services/user_service.dart';
@@ -23,8 +24,11 @@ class DocumentProvider with ChangeNotifier {
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
 
-  List<UserModel> _managers = [];
-  List<UserModel> get managers => _managers;
+  List<ManagerModel> _managers = [];
+  List<ManagerModel> get managers => _managers;
+
+  List<DocumentModel> _mySubmissions = [];
+  List<DocumentModel> get mySubmissions => _mySubmissions;
 
   final DocumentService _documentService = DocumentService();
 
@@ -181,9 +185,8 @@ class DocumentProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      List<UserModel> result = await UserService().getUsers(
+      List<ManagerModel> result = await _documentService.getManagers(
         token: (await tokenRepository.getToken())!,
-        role: 'manager',
       );
 
       _managers = result;
@@ -191,6 +194,22 @@ class DocumentProvider with ChangeNotifier {
     } catch (error) {
       if (kDebugMode) log('Error fetching users: $error');
       errorCallback?.call(error);
+    }
+  }
+
+  Future<void> getMySubmissions({
+    required Function(String) errorCallback,
+  }) async {
+    try {
+      final token = await tokenRepository.getToken();
+      if (token == null) throw 'No token found';
+      _mySubmissions = await _documentService.getMySubmissions(
+        token: token,
+        errorCallback: errorCallback,
+      );
+      notifyListeners();
+    } catch (e) {
+      errorCallback(e.toString());
     }
   }
 

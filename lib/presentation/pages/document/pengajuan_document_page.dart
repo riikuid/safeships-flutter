@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
+import 'package:safeships_flutter/models/manager_model.dart';
 import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
 import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
@@ -25,6 +26,8 @@ class PengajuanDocumentPage extends StatefulWidget {
 
 class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
   PlatformFile? selectedFile;
+  final GlobalKey<DropdownSearchState<ManagerModel>> _dropdownKey = GlobalKey();
+
   final ScrollController _scrollController = ScrollController();
   int? _selectedManagerId;
 
@@ -113,6 +116,17 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
     _scrollController.dispose(); // Properly dispose of the ScrollController
     super.dispose();
     // context.read<UserProvider>().resetManager();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (context.read<DocumentProvider>().managers.isEmpty) {
+        await context.read<DocumentProvider>().getManagers();
+        setState(() {}); // Trigger rebuild untuk DropdownSearch
+      }
+    });
   }
 
   @override
@@ -361,10 +375,10 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                           const SizedBox(
                             height: 5,
                           ),
-                          DropdownSearch<UserModel>(
+                          DropdownSearch<ManagerModel>(
                             items: (String filter, LoadProps? loadProps) async {
-                              List<UserModel> managers =
-                                  context.watch<DocumentProvider>().managers;
+                              List<ManagerModel> managers =
+                                  context.read<DocumentProvider>().managers;
                               if (managers.isEmpty) {
                                 await context
                                     .read<DocumentProvider>()
@@ -376,10 +390,11 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                       .contains(filter.toLowerCase()))
                                   .toList();
                             },
-                            compareFn: (UserModel? a, UserModel? b) =>
+                            compareFn: (ManagerModel? a, ManagerModel? b) =>
                                 a?.id == b?.id,
-                            itemAsString: (UserModel? user) => user?.name ?? '',
-                            onChanged: (UserModel? selectedUser) {
+                            itemAsString: (ManagerModel? user) =>
+                                user?.name ?? '',
+                            onChanged: (ManagerModel? selectedUser) {
                               if (selectedUser != null) {
                                 setState(() {
                                   _selectedManagerId = selectedUser.id;
@@ -428,7 +443,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                   ),
                                 ),
                               ),
-                              itemBuilder: (context, UserModel item, bool _,
+                              itemBuilder: (context, ManagerModel item, bool _,
                                   bool isSelected) {
                                 return ListTile(
                                   leading: Icon(
@@ -484,7 +499,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                 ),
                               ),
                             ),
-                            validator: (UserModel? value) {
+                            validator: (ManagerModel? value) {
                               if (value == null) {
                                 return 'Pilih salah satu manager';
                               }
@@ -517,6 +532,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
           ],
         ),
         child: PrimaryButton(
+          isLoading: _isLoading,
           child: Text(
             'Submit',
             style: primaryTextStyle.copyWith(

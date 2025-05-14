@@ -156,4 +156,32 @@ class UserService {
       throw jsonDecode(response.body)['message'] ?? 'Failed to delete user';
     }
   }
+
+  Future<bool> resetPassword({
+    required String token,
+    required int id,
+    required String password,
+    required Function(String) errorCallback,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/users/$id/reset-password';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+    var body = jsonEncode({'password': password});
+
+    final response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: body,
+    );
+
+    log('PUT /api/users/$id/reset-password response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonDecode(response.body)['message'] ?? 'Failed to reset password';
+    }
+  }
 }

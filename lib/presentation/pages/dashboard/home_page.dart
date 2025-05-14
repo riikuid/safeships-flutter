@@ -17,35 +17,10 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
-      appBar: AppBar(
-        backgroundColor: primaryColor500,
-        title: Text(
-          'SafeSHIPS',
-          style: primaryTextStyle.copyWith(
-            fontSize: 18,
-            fontWeight: semibold,
-            color: whiteColor,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Padding(
-            //   padding: EdgeInsets.only(
-            //     top: 20,
-            //     right: 20,
-            //     left: 20,
-            //   ),
-            //   child: Column(
-            //     children: [
-            //       Text(
-            //         authModel.name,
-            //       )
-            //     ],
-            //   ),
-            // ),
             Container(
               // width: double.infinity,
               margin: const EdgeInsets.symmetric(

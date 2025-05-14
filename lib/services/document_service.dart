@@ -7,8 +7,61 @@ import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
+import 'package:safeships_flutter/models/manager_model.dart';
+import 'package:safeships_flutter/models/user_model.dart';
 
 class DocumentService {
+  Future<List<ManagerModel>> getManagers({
+    required String token,
+    String? role,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/users/managers';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/users response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body)['data'];
+      return data.map((item) => ManagerModel.fromJson(item)).toList();
+    } else {
+      throw jsonDecode(response.body)['message'] ?? 'Failed to fetch users';
+    }
+  }
+
+  Future<List<UserModel>> getUsers({
+    required String token,
+    String? role,
+  }) async {
+    var url =
+        '${ApiEndpoint.baseUrl}/api/users${role != null ? '?role=$role' : ''}';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/users response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body)['data'];
+      return data.map((item) => UserModel.fromJson(item)).toList();
+    } else {
+      throw jsonDecode(response.body)['message'] ?? 'Failed to fetch users';
+    }
+  }
+
   Future<List<CategoryModel>> getCategories({
     required String token,
   }) async {
@@ -192,6 +245,40 @@ class DocumentService {
       return documents;
     } else {
       throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  Future<List<DocumentModel>> getMySubmissions({
+    required String token,
+    required Function(String) errorCallback,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/my-submissions';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      log(response.body);
+
+      if (response.statusCode == 200) {
+        // final jsonResponse = jsonDecode(response.body);
+        List data = jsonDecode(response.body)['data'];
+        List<DocumentModel> documents =
+            data.map((item) => DocumentModel.fromJson(item)).toList();
+        return documents;
+      } else {
+        throw jsonDecode(response.body)['message'] ??
+            'Failed to fetch submissions';
+      }
+    } catch (e) {
+      errorCallback(e.toString());
+      rethrow;
     }
   }
 }

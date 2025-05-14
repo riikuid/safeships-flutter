@@ -140,6 +140,28 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> resetPassword({
+    required int id,
+    required String password,
+    required Function(String) errorCallback,
+  }) async {
+    try {
+      final token = await tokenRepository.getToken();
+      if (token == null) throw 'No token found';
+      await _userService.resetPassword(
+        token: token,
+        id: id,
+        password: password,
+        errorCallback: errorCallback,
+      );
+      notifyListeners();
+      return true;
+    } catch (error) {
+      errorCallback(error.toString());
+      return false;
+    }
+  }
+
   void resetSelectedUser() {
     _selectedUser = null;
     notifyListeners();

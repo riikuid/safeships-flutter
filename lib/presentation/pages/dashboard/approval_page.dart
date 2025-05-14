@@ -31,32 +31,38 @@ class _ApprovalPageState extends State<ApprovalPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: greyBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: primaryColor500,
-        title: Text(
-          'Approvals',
-          style: primaryTextStyle.copyWith(
-            fontSize: 18,
-            fontWeight: semibold,
-            color: whiteColor,
+      body: Column(
+        children: [
+          Container(
+            color: primaryColor500, // Warna latar belakang TabBar
+            child: TabBar(
+              controller: _tabController,
+              labelColor: whiteColor,
+              unselectedLabelColor: Colors.white70,
+              indicatorColor: whiteColor,
+              labelStyle: primaryTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semibold,
+              ),
+              unselectedLabelStyle: primaryTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: regular,
+              ),
+              tabs: const [
+                Tab(text: 'Documents'),
+                Tab(text: 'Patrols'),
+              ],
+            ),
           ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          tabs: const [
-            Tab(text: 'Documents'),
-            Tab(text: 'Patrols'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          ApprovalDocumentPage(),
-          ApprovalPatrolPage(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                ApprovalDocumentPage(),
+                ApprovalPatrolPage(),
+              ],
+            ),
+          ),
         ],
       ),
     );

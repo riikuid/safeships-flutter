@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
-import 'package:safeships_flutter/presentation/pages/dashboard/inbox_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/my_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/user_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class DashboardProvider with ChangeNotifier {
@@ -12,11 +13,13 @@ class DashboardProvider with ChangeNotifier {
       'Home',
       Icon(
         Icons.home_outlined,
-        color: primaryColor800,
+        color: subtitleTextColor,
+        size: 16,
       ),
       Icon(
         Icons.home_rounded,
         color: primaryColor800,
+        size: 16,
       ),
       const HomePage(),
     ],
@@ -24,11 +27,13 @@ class DashboardProvider with ChangeNotifier {
       'Approvals',
       Icon(
         Icons.fact_check_outlined,
-        color: primaryColor800,
+        color: subtitleTextColor,
+        size: 16,
       ),
       Icon(
         Icons.fact_check_rounded,
         color: primaryColor800,
+        size: 16,
       ),
       const ApprovalPage(),
     ],
@@ -36,13 +41,28 @@ class DashboardProvider with ChangeNotifier {
       'My Submissions',
       Icon(
         Icons.archive_outlined,
-        color: primaryColor800,
+        color: subtitleTextColor,
+        size: 16,
       ),
       Icon(
         Icons.archive_rounded,
         color: primaryColor800,
+        size: 16,
       ),
-      const InboxPage(),
+      const MySubmissionsPage(),
+    ],
+    [
+      'User Management',
+      Icon(
+        Icons.people_outline,
+        color: subtitleTextColor,
+        size: 16,
+      ),
+      Icon(
+        Icons.people,
+        color: primaryColor800,
+      ),
+      const UserPage(),
     ],
   ];
 

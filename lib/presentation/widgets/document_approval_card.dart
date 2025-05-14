@@ -25,6 +25,7 @@ class DocumentApprovalCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => DetailDocumentApprovalPage(
+              isViewOnly: false,
               userId: userId,
               doc: doc,
             ),
