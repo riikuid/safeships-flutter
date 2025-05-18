@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/profile_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/sidebar.dart';
+import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
@@ -30,28 +34,57 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: primaryColor500,
         title: Consumer<DashboardProvider>(
           builder: (context, dashboardProvider, child) {
-            String pageTitle = dashboardProvider
-                .dashboardMenu[dashboardProvider.currentIndex][0] as String;
+            String pageTitle;
+            if (dashboardProvider.pages.isNotEmpty) {
+              pageTitle = dashboardProvider
+                  .dashboardMenu[dashboardProvider.currentIndex][0] as String;
+            } else {
+              pageTitle = '';
+            }
+
             return Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'SafeSHIPS ',
-                  style: primaryTextStyle.copyWith(
-                    fontSize: 18,
-                    fontWeight: semibold,
-                    color: (pageTitle != 'Home') ? disabledColor : whiteColor,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'SafeSHIPS ',
+                      style: primaryTextStyle.copyWith(
+                        fontSize: 18,
+                        fontWeight: semibold,
+                        color:
+                            (pageTitle != 'Home') ? disabledColor : whiteColor,
+                      ),
+                    ),
+                    if (pageTitle != 'Home')
+                      Text(
+                        '/ $pageTitle',
+                        style: primaryTextStyle.copyWith(
+                          fontSize: 14,
+                          fontWeight: semibold,
+                          color: whiteColor,
+                        ),
+                      ),
+                  ],
                 ),
-                if (pageTitle != 'Home')
-                  Text(
-                    '/ $pageTitle',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: semibold,
+                if (pageTitle == 'Home')
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.manage_accounts,
+                      size: 24,
                       color: whiteColor,
                     ),
-                  ),
+                  )
               ],
             );
           },
@@ -60,7 +93,11 @@ class _DashboardState extends State<Dashboard> {
       drawer: Sidebar(),
       body: Consumer<DashboardProvider>(
         builder: (context, dashboardProvider, child) {
-          return dashboardProvider.pages[dashboardProvider.currentIndex];
+          if (dashboardProvider.pages.isNotEmpty) {
+            return dashboardProvider.pages[dashboardProvider.currentIndex];
+          } else {
+            return Center(child: Text('No pages available'));
+          }
         },
       ),
     );

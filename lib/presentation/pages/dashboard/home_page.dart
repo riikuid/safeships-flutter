@@ -22,6 +22,19 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(
+                20,
+                20,
+                20,
+                10,
+              ),
+              padding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 15,
+              ),
+            ),
+            Container(
               // width: double.infinity,
               margin: const EdgeInsets.symmetric(
                 vertical: 20,

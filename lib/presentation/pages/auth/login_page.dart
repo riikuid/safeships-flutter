@@ -10,6 +10,7 @@ import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
 import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
+import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class LoginPage extends StatefulWidget {
@@ -82,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
             .then(
           (value) {
             if (value) {
+              context.read<DashboardProvider>().updateRole(context);
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(

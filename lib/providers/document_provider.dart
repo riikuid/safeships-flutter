@@ -8,9 +8,7 @@ import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
-import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/services/document_service.dart';
-import 'package:safeships_flutter/services/user_service.dart';
 
 class DocumentProvider with ChangeNotifier {
   final TokenRepository tokenRepository = TokenRepository();
@@ -90,6 +88,24 @@ class DocumentProvider with ChangeNotifier {
     } catch (error) {
       if (kDebugMode) log(error.toString());
       errorCallback?.call(error);
+    }
+  }
+
+  Future<DocumentModel> showDocuments({
+    required int documentId,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      DocumentModel result = await _documentService.showDocument(
+        documentId: documentId,
+        token: (await tokenRepository.getToken())!,
+      );
+
+      return result;
+    } catch (error) {
+      if (kDebugMode) log(error.toString());
+      errorCallback?.call(error);
+      rethrow;
     }
   }
 
@@ -205,7 +221,6 @@ class DocumentProvider with ChangeNotifier {
       if (token == null) throw 'No token found';
       _mySubmissions = await _documentService.getMySubmissions(
         token: token,
-        errorCallback: errorCallback,
       );
       notifyListeners();
     } catch (e) {
@@ -218,48 +233,76 @@ class DocumentProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Future getDocuments({
-  //   void Function(dynamic)? errorCallback,
-  // }) async {
-  //   try {
-  //     List<DocumentModel> result = await _documentService.getDocuments(
-  //       token: (await tokenRepository.getToken())!,
-  //     );
+  Future<bool> deleteDocument({
+    required int documentId,
+    required int categoryId,
+    VoidCallback? onSuccess,
+    void Function(dynamic)? onError,
+  }) async {
+    try {
+      await _documentService.deleteDocument(
+        documentId: documentId,
+        token: (await tokenRepository.getToken())!,
+      );
 
-  //     if (result.length < _limit) {
-  //       hasMore = false;
-  //     }
+      // Update state: hapus dokumen dari kategori
+      _categoryWithDocs = _categoryWithDocs.map((category) {
+        if (category.id == categoryId) {
+          return CategoryWithDocModel(
+            id: category.id,
+            name: category.name,
+            code: category.code,
+            items: category.items.where((doc) => doc.id != documentId).toList(),
+          );
+        }
+        return category;
+      }).toList();
 
-  //     for (var item in result) {
-  //       _histories.add(item);
-  //     }
+      // Update mySubmissions if document exists there
+      _mySubmissions =
+          _mySubmissions.where((doc) => doc.id != documentId).toList();
 
-  //     _page++;
-  //     notifyListeners();
-  //   } catch (error) {
-  //     if (kDebugMode) log(error.toString());
-  //     errorCallback?.call(error);
-  //   }
-  // }
+      onSuccess?.call();
+      notifyListeners();
+      return true;
+    } on SocketException {
+      onError?.call('Terjadi Kesalahan Koneksi');
+      return false;
+    } catch (e) {
+      onError?.call(e);
+      return false;
+    }
+  }
 
-  // Future refreshGetHistory({
-  //   required String typeTrx,
-  //   required String statusTrx,
-  //   required String startDate,
-  //   required String endDate,
-  // }) async {
-  //   _page = 1;
-  //   _histories = [];
-  //   hasMore = true;
-  //   // notifyListeners();
+  Future<bool> deleteDocumentsByCategory({
+    required int categoryId,
+    VoidCallback? onSuccess,
+    void Function(dynamic)? onError,
+  }) async {
+    try {
+      await _documentService.deleteDocumentsByCategory(
+        categoryId: categoryId,
+        token: (await tokenRepository.getToken())!,
+      );
 
-  //   await getHistory(
-  //     startDate: startDate,
-  //     endDate: endDate,
-  //     typeTrx: typeTrx,
-  //     statusTrx: statusTrx,
-  //   );
-  //   serviceLoading = false;
-  //   notifyListeners();
-  // }
+      // Update state: hapus kategori dari daftar
+      _categoryWithDocs = _categoryWithDocs
+          .where((category) => category.id != categoryId)
+          .toList();
+
+      // Update mySubmissions if any documents belong to this category
+      _mySubmissions =
+          _mySubmissions.where((doc) => doc.categoryId != categoryId).toList();
+
+      onSuccess?.call();
+      notifyListeners();
+      return true;
+    } on SocketException {
+      onError?.call('Terjadi Kesalahan Koneksi');
+      return false;
+    } catch (e) {
+      onError?.call(e);
+      return false;
+    }
+  }
 }

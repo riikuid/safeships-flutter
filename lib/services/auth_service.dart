@@ -53,11 +53,11 @@ class AuthService {
       Uri.parse(url),
       headers: headers,
     );
+    tokenRepository.clearToken();
 
     log(response.body);
 
     if (response.statusCode == 200) {
-      tokenRepository.clearToken();
       return true;
     } else {
       throw jsonDecode(response.body)['message'];
@@ -84,37 +84,57 @@ class AuthService {
     }
   }
 
-  // Future<AuthModel> register({
-  //   required String fullName,
-  //   required String email,
-  //   required String password,
-  //   required String fcmToken,
-  //   required String passwordConfirmation,
-  // }) async {
-  //   var url = '${ApiEndpoint.baseUrl}/api/register';
+  Future<AuthModel> updateProfile({
+    required String name,
+    required String email,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/users/update-profile';
+    String token = (await tokenRepository.getToken())!;
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var body = jsonEncode({
+      'name': name,
+      'email': email,
+    });
 
-  //   var headers = {'Content-Type': 'application/json'};
+    final response =
+        await http.put(Uri.parse(url), headers: headers, body: body);
 
-  //   var body = jsonEncode({
-  //     'name': fullName,
-  //     'email': email,
-  //     'password_confirmation': passwordConfirmation,
-  //     'password': password,
-  //     'fmc_token': fcmToken,
-  //   });
+    log(response.body);
 
-  //   final response = await http.post(
-  //     Uri.parse(url),
-  //     headers: headers,
-  //     body: body,
-  //   );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      return AuthModel.fromJson(data);
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
 
-  //   print(response.body);
+  Future<void> resetPassword({
+    required int userId,
+    required String password,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/users/$userId/reset-password';
+    String token = (await tokenRepository.getToken())!;
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var body = jsonEncode({
+      'password': password,
+    });
 
-  //   if (response.statusCode == 201) {
-  //     return AuthModel.fromJson(jsonDecode(response.body)['user']);
-  //   } else {
-  //     throw jsonDecode(response.body)['message'];
-  //   }
-  // }
+    final response =
+        await http.put(Uri.parse(url), headers: headers, body: body);
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
 }

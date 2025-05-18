@@ -15,6 +15,7 @@ class DocumentModel {
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DateTime? deletedAt;
   final AuthModel? user;
   final CategoryModel category;
   final List<DocumentApprovalModel>? documentApprovals;
@@ -30,6 +31,7 @@ class DocumentModel {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.deletedAt,
     this.user,
     required this.category,
     this.documentApprovals,
@@ -49,6 +51,9 @@ class DocumentModel {
         status: json["status"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
+        deletedAt: json["deleted_at"] != null
+            ? DateTime.parse(json["deleted_at"])
+            : null,
         user: json["user"] != null ? AuthModel.fromJson(json["user"]) : null,
         category: CategoryModel.fromJson(json["category"]),
         documentApprovals: List<DocumentApprovalModel>.from(

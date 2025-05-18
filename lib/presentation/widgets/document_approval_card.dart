@@ -24,8 +24,8 @@ class DocumentApprovalCard extends StatelessWidget {
       onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailDocumentApprovalPage(
-              isViewOnly: false,
+            builder: (context) => DetailDocumentPage(
+              viewMode: DocumentViewMode.managerial,
               userId: userId,
               doc: doc,
             ),

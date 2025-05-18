@@ -14,10 +14,10 @@ class MySubmissionCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DetailDocumentApprovalPage(
+          builder: (context) => DetailDocumentPage(
+            viewMode: DocumentViewMode.mySubmission,
             userId: 0, // Not used in view-only mode
             doc: doc,
-            isViewOnly: true,
           ),
         ),
       ),

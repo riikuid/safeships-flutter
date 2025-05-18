@@ -46,6 +46,8 @@ class AppHelper {
         return greenLableColor;
       case 'rejected':
         return redLableColor;
+      case 'deleted':
+        return redLableColor;
       default:
         return orangeLableColor;
     }

@@ -31,7 +31,6 @@ class CategoryWithDocModel {
 
 class DocModel {
   final int id;
-  final int categoryId;
   final String title;
   final String description;
   final String filePath;
@@ -40,7 +39,6 @@ class DocModel {
   DocModel({
     required this.id,
     required this.title,
-    required this.categoryId,
     required this.description,
     required this.filePath,
     required this.updatedAt,
@@ -52,7 +50,6 @@ class DocModel {
   factory DocModel.fromJson(Map<String, dynamic> json) => DocModel(
         id: json["id"],
         title: json["title"],
-        categoryId: json["category_id"],
         description: json["description"],
         filePath: json["file_path"],
         updatedAt: DateTime.parse(json["updated_at"]),

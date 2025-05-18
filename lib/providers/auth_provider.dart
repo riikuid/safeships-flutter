@@ -41,12 +41,10 @@ class AuthProvider with ChangeNotifier {
   }) async {
     try {
       log('logout');
-      bool result = await AuthService().logout();
+      await AuthService().logout();
 
-      if (result) {
-        _user = null;
-        notifyListeners();
-      }
+      _user = null;
+      notifyListeners();
 
       return true;
     } on SocketException {
@@ -105,6 +103,41 @@ class AuthProvider with ChangeNotifier {
       _user = data;
       notifyListeners();
 
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> updateProfile({
+    required String name,
+    required String email,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      _user = await AuthService().updateProfile(name: name, email: email);
+      notifyListeners();
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> resetPassword({
+    required int userId,
+    required String password,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      await AuthService().resetPassword(userId: userId, password: password);
       return true;
     } on SocketException {
       errorCallback?.call("No Internet Connection");

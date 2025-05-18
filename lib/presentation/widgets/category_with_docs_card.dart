@@ -1,20 +1,30 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
-
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/presentation/pages/document/pengajuan_document_page.dart';
+import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class CategoryWithDocsCard extends StatelessWidget {
   final CategoryWithDocModel category;
+  final Function(int) onTapDoc;
+  final Function(int, int) onDeleteDoc; // New callback for deleting a document
+  final Function(int) onDeleteCategory; // New callback for deleting a category
+
   const CategoryWithDocsCard({
     super.key,
     required this.category,
+    required this.onTapDoc,
+    required this.onDeleteDoc,
+    required this.onDeleteCategory,
   });
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.user;
+
     return Stack(
       alignment: Alignment.topRight,
       children: [
@@ -24,9 +34,7 @@ class CategoryWithDocsCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: whiteColor,
-            borderRadius: BorderRadius.all(
-              Radius.circular(12.0),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
           ),
           child: IntrinsicWidth(
             child: Column(
@@ -38,9 +46,7 @@ class CategoryWithDocsCard extends StatelessWidget {
                     horizontal: 16,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(100),
-                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
                     color: primaryColor400,
                   ),
                   child: Text(
@@ -53,9 +59,7 @@ class CategoryWithDocsCard extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
                   category.name,
                   style: primaryTextStyle.copyWith(
@@ -65,16 +69,12 @@ class CategoryWithDocsCard extends StatelessWidget {
                   ),
                   textAlign: TextAlign.justify,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: greyBackgroundColor.withOpacity(0.5),
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                   ),
                   child: category.items.isEmpty
                       ? Center(
@@ -82,7 +82,6 @@ class CategoryWithDocsCard extends StatelessWidget {
                             'Belum ada dokumentasi untuk kategori ini',
                             style: primaryTextStyle.copyWith(
                               fontSize: 12,
-                              // fontWeight: semibold,
                               color: subtitleTextColor,
                             ),
                           ),
@@ -93,51 +92,77 @@ class CategoryWithDocsCard extends StatelessWidget {
                           separatorBuilder: (context, index) => const Divider(),
                           itemCount: category.items.length,
                           itemBuilder: (context, index) {
+                            final doc = category.items[index];
                             return ListTile(
+                              contentPadding: const EdgeInsets.only(
+                                left: 5,
+                                right: 0,
+                              ),
                               leading: Icon(
-                                AppHelper.getFileIcon(
-                                  category.items[index].filePath,
-                                ),
-                                color: subtitleTextColor,
+                                AppHelper.getFileIcon(doc.filePath),
+                                color: primaryColor900,
+                                size: 20,
                               ),
                               onTap: () {
-                                print(category.items[index].title);
+                                onTapDoc(doc.id);
                               },
                               title: Text(
-                                category.items[index].title,
+                                doc.title,
                                 style: primaryTextStyle.copyWith(
                                   fontSize: 12,
                                   fontWeight: semibold,
                                   color: primaryColor900,
                                 ),
                               ),
+                              trailing: (context
+                                          .read<AuthProvider>()
+                                          .user
+                                          .role ==
+                                      'super_admin')
+                                  ? PopupMenuButton<String>(
+                                      splashRadius: 1,
+                                      elevation: 2,
+                                      padding: EdgeInsets.zero,
+                                      color: whiteColor,
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: subtitleTextColor,
+                                        size: 18,
+                                      ),
+                                      onSelected: (value) {
+                                        if (value == 'hapus') {
+                                          onDeleteDoc(doc.id, category.id);
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          value: 'hapus',
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.delete,
+                                                color: Color(0xfff94449),
+                                                size: 14,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Hapus',
+                                                style:
+                                                    primaryTextStyle.copyWith(
+                                                  fontSize: 12,
+                                                  color: Color(0xfff94449),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : null,
                             );
                           },
-                          // children: category.children != null
-                          //     ? category.children!.map(
-                          //         (e) {
-                          //           return ListTile(
-                          //             leading: Icon(
-                          //               Icons.folder,
-                          //               color: primaryColor300,
-                          //             ),
-                          //             onTap: () {
-                          //               print('coba');
-                          //             },
-                          //             title: Text(
-                          //               e.name,
-                          //               style: primaryTextStyle.copyWith(
-                          //                 fontSize: 12,
-                          //                 fontWeight: semibold,
-                          //                 color: primaryColor900,
-                          //               ),
-                          //             ),
-                          //           );
-                          //         },
-                          //       ).toList()
-                          //     : [],
                         ),
-                )
+                ),
               ],
             ),
           ),
@@ -154,8 +179,6 @@ class CategoryWithDocsCard extends StatelessWidget {
           ),
           onSelected: (value) {
             if (value == 'ajukan') {
-              // TODO: Lakukan aksi pengajuan dokumentasi
-              print('Ajukan Dokumentasi dipilih');
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -165,13 +188,11 @@ class CategoryWithDocsCard extends StatelessWidget {
                 ),
               );
             } else if (value == 'hapus') {
-              // TODO: Lakukan aksi hapus semua dokumentasi
-              print('Hapus Semua Dokumentasi dipilih');
+              onDeleteCategory(category.id);
             }
           },
           itemBuilder: (context) => [
             PopupMenuItem(
-              // padding: EdgeInsets.zero,
               value: 'ajukan',
               child: Row(
                 children: [
@@ -180,46 +201,40 @@ class CategoryWithDocsCard extends StatelessWidget {
                     color: subtitleTextColor,
                     size: 14,
                   ),
-                  const SizedBox(
-                    width: 4,
-                  ),
+                  const SizedBox(width: 4),
                   Text(
                     'Ajukan Dokumentasi',
                     style: primaryTextStyle.copyWith(
                       fontSize: 12,
-                      // fontWeight: semibold,
                       color: subtitleTextColor,
                     ),
                   ),
                 ],
               ),
             ),
-            PopupMenuItem(
-              // padding: EdgeInsets.zero,
-              value: 'hapus',
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.delete,
-                    color: Color(0xfff94449),
-                    size: 14,
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    'Hapus Semua Dokumentasi',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 12,
-                      // fontWeight: semibold,
-                      color: const Color(0xfff94449),
+            if (context.read<AuthProvider>().user.role == 'super_admin')
+              PopupMenuItem(
+                value: 'hapus',
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.delete,
+                      color: Color(0xfff94449),
+                      size: 14,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      'Hapus Semua Dokumentasi',
+                      style: primaryTextStyle.copyWith(
+                        fontSize: 12,
+                        color: Color(0xfff94449),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
-        )
+        ),
       ],
     );
   }

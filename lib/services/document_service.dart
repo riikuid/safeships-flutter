@@ -250,7 +250,6 @@ class DocumentService {
 
   Future<List<DocumentModel>> getMySubmissions({
     required String token,
-    required Function(String) errorCallback,
   }) async {
     var url = '${ApiEndpoint.baseUrl}/api/documents/my-submissions';
     var headers = {
@@ -277,8 +276,77 @@ class DocumentService {
             'Failed to fetch submissions';
       }
     } catch (e) {
-      errorCallback(e.toString());
       rethrow;
+    }
+  }
+
+  Future<DocumentModel> showDocument({
+    required String token,
+    required int documentId,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/$documentId/detail';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      log(response.body);
+
+      if (response.statusCode == 200) {
+        // final jsonResponse = jsonDecode(response.body);
+        var data = jsonDecode(response.body)['data'];
+        DocumentModel documents = DocumentModel.fromJson(data);
+        return documents;
+      } else {
+        throw jsonDecode(response.body)['message'] ??
+            'Failed to fetch submissions';
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteDocument({
+    required int documentId,
+    required String token,
+  }) async {
+    if (token == null) throw 'No token found';
+
+    final url = '${ApiEndpoint.baseUrl}/api/documents/$documentId';
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.delete(Uri.parse(url), headers: headers);
+
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body)['message'] ?? 'Unknown error';
+      throw error;
+    }
+  }
+
+  Future<void> deleteDocumentsByCategory({
+    required int categoryId,
+    required String token,
+  }) async {
+    final url = '${ApiEndpoint.baseUrl}/api/documents/category/$categoryId';
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.delete(Uri.parse(url), headers: headers);
+
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body)['message'] ?? 'Unknown error';
+      throw error;
     }
   }
 }

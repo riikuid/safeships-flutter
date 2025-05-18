@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           create: (context) => DocumentProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => DashboardProvider(),
+          create: (context) => DashboardProvider(context),
         ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
