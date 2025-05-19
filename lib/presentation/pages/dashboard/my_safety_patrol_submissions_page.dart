@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:safeships_flutter/presentation/widgets/my_submission_card.dart';
-import 'package:safeships_flutter/providers/document_provider.dart';
+import 'package:safeships_flutter/presentation/widgets/safety_patrol_submission_card.dart';
+import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
-class MySubmissionsPage extends StatefulWidget {
-  const MySubmissionsPage({super.key});
+class MySafetyPatrolSubmissionsPage extends StatefulWidget {
+  const MySafetyPatrolSubmissionsPage({super.key});
 
   @override
-  State<MySubmissionsPage> createState() => _MySubmissionsPageState();
+  State<MySafetyPatrolSubmissionsPage> createState() =>
+      _MySafetyPatrolSubmissionsPageState();
 }
 
-class _MySubmissionsPageState extends State<MySubmissionsPage> {
+class _MySafetyPatrolSubmissionsPageState
+    extends State<MySafetyPatrolSubmissionsPage> {
   late Future<void> futureGetSubmissions;
-  late DocumentProvider documentProvider;
-  String errorText = "Gagal mendapatkan dokumen Anda";
+  late SafetyPatrolProvider safetyPatrolProvider;
+  String errorText = "Gagal mendapatkan laporan Anda";
 
   @override
   void initState() {
     super.initState();
-    documentProvider = Provider.of<DocumentProvider>(context, listen: false);
+    safetyPatrolProvider =
+        Provider.of<SafetyPatrolProvider>(context, listen: false);
     futureGetSubmissions = getSubmissions();
   }
 
   Future<void> getSubmissions() async {
-    await documentProvider.getMySubmissions(
+    await safetyPatrolProvider.getMySubmissions(
       errorCallback: (p0) => setState(() {
         errorText = p0;
       }),
@@ -39,14 +42,6 @@ class _MySubmissionsPageState extends State<MySubmissionsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'My Submissions',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
           Expanded(
             child: FutureBuilder(
               future: futureGetSubmissions,
@@ -75,12 +70,12 @@ class _MySubmissionsPageState extends State<MySubmissionsPage> {
                     ),
                   );
                 } else {
-                  return Consumer<DocumentProvider>(
-                    builder: (context, documentProvider, _) {
-                      if (documentProvider.mySubmissions.isEmpty) {
+                  return Consumer<SafetyPatrolProvider>(
+                    builder: (context, safetyPatrolProvider, _) {
+                      if (safetyPatrolProvider.mySubmissions.isEmpty) {
                         return Center(
                           child: Text(
-                            'Tidak ada dokumen yang diajukan',
+                            'Tidak ada laporan yang diajukan',
                             style: primaryTextStyle.copyWith(
                               color: subtitleTextColor,
                             ),
@@ -95,8 +90,9 @@ class _MySubmissionsPageState extends State<MySubmissionsPage> {
                           },
                           color: primaryColor500,
                           child: ListView(
-                            children: documentProvider.mySubmissions
-                                .map((doc) => MySubmissionCard(doc: doc))
+                            children: safetyPatrolProvider.mySubmissions
+                                .map((patrol) =>
+                                    SafetyPatrolSubmissionCard(patrol: patrol))
                                 .toList(),
                           ),
                         );

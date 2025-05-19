@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
-import 'package:safeships_flutter/models/document_approval_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
 import 'package:safeships_flutter/presentation/widgets/approve_document_modal.dart';
 import 'package:safeships_flutter/presentation/widgets/primary_button.dart';

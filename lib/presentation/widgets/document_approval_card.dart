@@ -39,15 +39,14 @@ class DocumentApprovalCard extends StatelessWidget {
           vertical: 5,
         ),
         decoration: BoxDecoration(
-          color: whiteColor,
+          color: (approval == 'pending' &&
+                  doc.status != 'approved' &&
+                  doc.status != 'rejected')
+              ? whiteColor
+              : disabledColor.withOpacity(0.4),
           borderRadius: const BorderRadius.all(
             Radius.circular(12.0),
           ),
-          border: Border(
-              left: BorderSide(
-            width: 5.0,
-            color: AppHelper.getColorBasedOnStatus(approval),
-          )),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +66,7 @@ class DocumentApprovalCard extends StatelessWidget {
                       width: 0.5,
                       color: primaryColor500,
                     ),
-                    color: primaryColor50,
+                    color: primaryColor50.withOpacity(0.5),
                   ),
                   child: Text(
                     doc.category.code,
@@ -124,7 +123,7 @@ class DocumentApprovalCard extends StatelessWidget {
               height: 5,
             ),
             Text(
-              'Submitted at: ${AppHelper.formatDateToString(doc.createdAt)}',
+              'Disubmit pada: ${AppHelper.formatDateToString(doc.createdAt)}',
               style: primaryTextStyle.copyWith(
                 color: subtitleTextColor,
                 fontSize: 12,
@@ -136,7 +135,7 @@ class DocumentApprovalCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Approval by You: ',
+                  'Status anda: ',
                   style: primaryTextStyle.copyWith(
                     color: subtitleTextColor,
                     fontSize: 12,

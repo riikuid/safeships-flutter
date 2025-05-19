@@ -4,9 +4,9 @@ import 'package:safeships_flutter/models/document_model.dart';
 import 'package:safeships_flutter/presentation/pages/approval/detail_document_approval_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
-class MySubmissionCard extends StatelessWidget {
+class DocumentationSubmissionCard extends StatelessWidget {
   final DocumentModel doc;
-  const MySubmissionCard({super.key, required this.doc});
+  const DocumentationSubmissionCard({super.key, required this.doc});
 
   @override
   Widget build(BuildContext context) {

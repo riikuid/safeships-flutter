@@ -2,18 +2,67 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/auth_model.dart';
 import 'package:safeships_flutter/presentation/pages/document/list_category_page.dart';
+import 'package:safeships_flutter/presentation/pages/safety_patrol/pengajuan_safety_patrol_page.dart';
+import 'package:safeships_flutter/presentation/widgets/gauge_progress_chart.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
+import 'package:safeships_flutter/providers/document_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _isLoading = false;
+
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ambil data progres saat halaman dimuat
+    _fetchProgress();
+  }
+
+  Future<void> _fetchProgress() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final authModel = context.read<AuthProvider>().user;
+    if (authModel == null) {
+      setState(() {
+        _isLoading = false;
+        _error = 'User tidak terautentikasi';
+      });
+      return;
+    }
+
+    await context.read<DocumentProvider>().fetchProgress(
+      errorCallback: (error) {
+        setState(() {
+          _isLoading = false;
+          _error = error;
+        });
+      },
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // AuthModel authModel = context.read<AuthProvider>().user;
+    final documentProvider = context.watch<DocumentProvider>();
 
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
@@ -106,7 +155,13 @@ class HomePage extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        log('dsds');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PengajuanSafetyPatrolPage(),
+                          ),
+                        );
                       },
                       child: Column(
                         children: [
@@ -195,6 +250,28 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (_error != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Error: $_error',
+                  style: primaryTextStyle.copyWith(color: Colors.red),
+                ),
+              )
+            else if (documentProvider.progressData.isNotEmpty)
+              GaugeProgressChart(
+                progressData: documentProvider.progressData,
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Tidak ada data progres penilaian',
+                  style: primaryTextStyle,
+                ),
+              ),
           ],
         ),
       ),

@@ -30,6 +30,9 @@ class DocumentProvider with ChangeNotifier {
 
   final DocumentService _documentService = DocumentService();
 
+  List<Map<String, dynamic>> _progressData = [];
+  List<Map<String, dynamic>> get progressData => _progressData;
+
   Future getCategories({
     void Function(dynamic)? errorCallback,
   }) async {
@@ -303,6 +306,19 @@ class DocumentProvider with ChangeNotifier {
     } catch (e) {
       onError?.call(e);
       return false;
+    }
+  }
+
+  Future<void> fetchProgress({
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      _progressData = await _documentService.fetchAssessmentProgress(
+        token: (await tokenRepository.getToken())!,
+      );
+    } catch (e) {
+      if (kDebugMode) log('Error fetching progress: $e');
+      errorCallback?.call(e.toString());
     }
   }
 }

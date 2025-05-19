@@ -57,24 +57,6 @@ class _ListCategoryPageState extends State<ListCategoryPage> {
           ),
         ),
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   elevation: 2,
-      //   backgroundColor: primaryColor800,
-      //   onPressed: () {},
-      //   icon: Icon(
-      //     Icons.assignment_add,
-      //     size: 20.0,
-      //     color: whiteColor,
-      //   ),
-      //   label: Text(
-      //     'FORM DOKUMENTASI',
-      //     style: primaryTextStyle.copyWith(
-      //       fontSize: 12,
-      //       color: whiteColor,
-      //       fontWeight: semibold,
-      //     ),
-      //   ),
-      // ),
       body: Column(
         children: [
           Padding(

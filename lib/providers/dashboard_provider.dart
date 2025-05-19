@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
-import 'package:safeships_flutter/presentation/pages/dashboard/my_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/my_documentation_submissions_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/user_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -42,7 +42,7 @@ class DashboardProvider with ChangeNotifier {
       const ApprovalPage(),
     ],
     [
-      'My Submissions',
+      'My Documentation Submission',
       Icon(
         Icons.archive_outlined,
         color: subtitleTextColor,
@@ -53,7 +53,7 @@ class DashboardProvider with ChangeNotifier {
         color: primaryColor800,
         size: 16,
       ),
-      const MySubmissionsPage(),
+      const MyDocumentationSubmissionsPage(),
     ],
     [
       'User Management',
@@ -101,7 +101,8 @@ class DashboardProvider with ChangeNotifier {
           .toList(); // Manager gets all except User Management
     } else if (role == 'user') {
       _dashboardMenu = _allMenuItems
-          .where((item) => item[0] == 'Home' || item[0] == 'My Submissions')
+          .where((item) =>
+              item[0] == 'Home' || item[0] == 'My Documentation Submission')
           .toList(); // User gets only Home and My Submissions
     } else {
       _dashboardMenu = []; // Fallback for unknown role

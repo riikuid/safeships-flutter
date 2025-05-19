@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
-import 'package:safeships_flutter/models/user_model.dart';
 
 class DocumentService {
   Future<List<ManagerModel>> getManagers({
@@ -31,32 +28,6 @@ class DocumentService {
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data'];
       return data.map((item) => ManagerModel.fromJson(item)).toList();
-    } else {
-      throw jsonDecode(response.body)['message'] ?? 'Failed to fetch users';
-    }
-  }
-
-  Future<List<UserModel>> getUsers({
-    required String token,
-    String? role,
-  }) async {
-    var url =
-        '${ApiEndpoint.baseUrl}/api/users${role != null ? '?role=$role' : ''}';
-    var headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: headers,
-    );
-
-    log('GET /api/users response: ${response.body}');
-
-    if (response.statusCode == 200) {
-      List data = jsonDecode(response.body)['data'];
-      return data.map((item) => UserModel.fromJson(item)).toList();
     } else {
       throw jsonDecode(response.body)['message'] ?? 'Failed to fetch users';
     }
@@ -347,6 +318,28 @@ class DocumentService {
     if (response.statusCode != 200) {
       final error = jsonDecode(response.body)['message'] ?? 'Unknown error';
       throw error;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAssessmentProgress(
+      {required String token}) async {
+    final response = await http.get(
+      Uri.parse('${ApiEndpoint.baseUrl}/api/documents/assessment-progress'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final List<dynamic> data = jsonData['data'];
+      return data.map((item) => Map<String, dynamic>.from(item)).toList();
+    } else {
+      throw Exception(
+          'Gagal mengambil data progres penilaian: ${response.statusCode}');
     }
   }
 }
