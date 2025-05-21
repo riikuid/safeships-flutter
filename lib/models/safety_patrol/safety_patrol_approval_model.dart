@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:safeships_flutter/models/user_model.dart';
 
-enum ApprovalStatus { pending, approved, rejected }
-
 class SafetyPatrolApprovalModel {
   final int id;
   final int safetyPatrolId;
   final int approverId;
-  final ApprovalStatus status;
+  final String status;
   final String? comments;
   final DateTime? approvedAt;
   final DateTime createdAt;
@@ -35,10 +33,7 @@ class SafetyPatrolApprovalModel {
         id: json["id"],
         safetyPatrolId: json["safety_patrol_id"],
         approverId: json["approver_id"],
-        status: ApprovalStatus.values.firstWhere(
-          (e) => e.toString().split('.').last == json["status"],
-          orElse: () => ApprovalStatus.pending,
-        ),
+        status: json["status"] ?? "pending",
         comments: json["comments"],
         approvedAt: json["approved_at"] != null
             ? DateTime.parse(json["approved_at"])

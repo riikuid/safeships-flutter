@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
-import 'package:safeships_flutter/models/safety_patrol/safety_patrol_feedback_model.dart';
+import 'package:safeships_flutter/models/safety_patrol/safety_patrol_card_model.dart';
 import 'package:safeships_flutter/models/safety_patrol/safety_patrol_model.dart';
 
 class SafetyPatrolService {
@@ -27,11 +27,11 @@ class SafetyPatrolService {
       List data = jsonDecode(response.body)['data'];
       return data.map((item) => ManagerModel.fromJson(item)).toList();
     } else {
-      throw jsonDecode(response.body)['message'] ?? 'Failed to fetch managers';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal mengambil manajer';
     }
   }
 
-  Future<bool> submitSafetyPatrol({
+  Future<SafetyPatrolModel> submitSafetyPatrol({
     required String token,
     required String managerId,
     required String reportDate,
@@ -67,17 +67,22 @@ class SafetyPatrolService {
     log('POST /api/safety-patrols response: ${response.body}');
 
     if (response.statusCode == 201) {
-      return true;
+      final data = jsonDecode(response.body)['data'];
+      return SafetyPatrolModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ??
-          'Failed to submit safety patrol';
+          'Gagal mengirim safety patrol';
     }
   }
 
-  Future<List<SafetyPatrolModel>> getManagerial({
+  Future<List<SafetyPatrolCardModel>> getManagerial({
     required String token,
+    String? status,
   }) async {
     var url = '${ApiEndpoint.baseUrl}/api/safety-patrols/managerial';
+    if (status != null) {
+      url += '?status=$status';
+    }
     var headers = {
       'Authorization': 'Bearer $token',
     };
@@ -91,10 +96,10 @@ class SafetyPatrolService {
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data'];
-      return data.map((item) => SafetyPatrolModel.fromJson(item)).toList();
+      return data.map((item) => SafetyPatrolCardModel.fromJson(item)).toList();
     } else {
       throw jsonDecode(response.body)['message'] ??
-          'Failed to fetch managerial reports';
+          'Gagal mengambil laporan manajerial';
     }
   }
 
@@ -128,7 +133,7 @@ class SafetyPatrolService {
       return SafetyPatrolModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ??
-          'Failed to approve safety patrol';
+          'Gagal menyetujui safety patrol';
     }
   }
 
@@ -160,11 +165,11 @@ class SafetyPatrolService {
       return SafetyPatrolModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ??
-          'Failed to reject safety patrol';
+          'Gagal menolak safety patrol';
     }
   }
 
-  Future<SafetyPatrolFeedbackModel> approveFeedback({
+  Future<SafetyPatrolModel> approveFeedback({
     required String token,
     required int feedbackId,
   }) async {
@@ -172,6 +177,7 @@ class SafetyPatrolService {
         '${ApiEndpoint.baseUrl}/api/safety-patrols/feedback/$feedbackId/approve';
     var headers = {
       'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
     };
 
     final response = await http.post(
@@ -183,14 +189,13 @@ class SafetyPatrolService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
-      return SafetyPatrolFeedbackModel.fromJson(data);
+      return SafetyPatrolModel.fromJson(data);
     } else {
-      throw jsonDecode(response.body)['message'] ??
-          'Failed to approve feedback';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal menyetujui feedback';
     }
   }
 
-  Future<SafetyPatrolFeedbackModel> rejectFeedback({
+  Future<SafetyPatrolModel> rejectFeedback({
     required String token,
     required int feedbackId,
     required String comments,
@@ -216,9 +221,9 @@ class SafetyPatrolService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
-      return SafetyPatrolFeedbackModel.fromJson(data);
+      return SafetyPatrolModel.fromJson(data);
     } else {
-      throw jsonDecode(response.body)['message'] ?? 'Failed to reject feedback';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal menolak feedback';
     }
   }
 
@@ -244,14 +249,18 @@ class SafetyPatrolService {
       return SafetyPatrolModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ??
-          'Failed to fetch safety patrol';
+          'Gagal mengambil safety patrol';
     }
   }
 
   Future<List<SafetyPatrolModel>> getMySubmissions({
     required String token,
+    String? status,
   }) async {
     var url = '${ApiEndpoint.baseUrl}/api/safety-patrols/my-submissions';
+    if (status != null) {
+      url += '?status=$status';
+    }
     var headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -268,15 +277,18 @@ class SafetyPatrolService {
       List data = jsonDecode(response.body)['data'];
       return data.map((item) => SafetyPatrolModel.fromJson(item)).toList();
     } else {
-      throw jsonDecode(response.body)['message'] ??
-          'Failed to fetch submissions';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal mengambil pengajuan';
     }
   }
 
-  Future<List<SafetyPatrolModel>> getMyActions({
+  Future<List<SafetyPatrolCardModel>> getMyActions({
     required String token,
+    String? status,
   }) async {
     var url = '${ApiEndpoint.baseUrl}/api/safety-patrols/my-actions';
+    if (status != null) {
+      url += '?status=$status';
+    }
     var headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -291,13 +303,13 @@ class SafetyPatrolService {
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data'];
-      return data.map((item) => SafetyPatrolModel.fromJson(item)).toList();
+      return data.map((item) => SafetyPatrolCardModel.fromJson(item)).toList();
     } else {
-      throw jsonDecode(response.body)['message'] ?? 'Failed to fetch actions';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal mengambil tindakan';
     }
   }
 
-  Future<bool> submitFeedback({
+  Future<SafetyPatrolModel> submitFeedback({
     required String token,
     required int patrolId,
     required String feedbackDate,
@@ -329,9 +341,10 @@ class SafetyPatrolService {
     log('POST /api/safety-patrols/$patrolId/submit-feedback response: ${response.body}');
 
     if (response.statusCode == 201) {
-      return true;
+      final data = jsonDecode(response.body)['data'];
+      return SafetyPatrolModel.fromJson(data);
     } else {
-      throw jsonDecode(response.body)['message'] ?? 'Failed to submit feedback';
+      throw jsonDecode(response.body)['message'] ?? 'Gagal mengirim feedback';
     }
   }
 }

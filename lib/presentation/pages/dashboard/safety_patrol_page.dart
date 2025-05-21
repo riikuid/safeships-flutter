@@ -2,16 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:safeships_flutter/presentation/pages/approval/approval_document_page.dart';
 import 'package:safeships_flutter/presentation/pages/approval/safety_patrol_approval_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/my_safety_patrol_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/need_action_patrol_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
-class ApprovalPage extends StatefulWidget {
-  const ApprovalPage({super.key});
+class SafetyPatrolPage extends StatefulWidget {
+  const SafetyPatrolPage({super.key});
 
   @override
-  State<ApprovalPage> createState() => _ApprovalPageState();
+  State<SafetyPatrolPage> createState() => _SafetyPatrolPageState();
 }
 
-class _ApprovalPageState extends State<ApprovalPage>
+class _SafetyPatrolPageState extends State<SafetyPatrolPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -49,8 +51,8 @@ class _ApprovalPageState extends State<ApprovalPage>
                 fontWeight: regular,
               ),
               tabs: const [
-                Tab(text: 'Documents'),
-                Tab(text: 'Patrols'),
+                Tab(text: 'My Submissions'),
+                Tab(text: 'Need Action'),
               ],
             ),
           ),
@@ -58,8 +60,8 @@ class _ApprovalPageState extends State<ApprovalPage>
             child: TabBarView(
               controller: _tabController,
               children: const [
-                ApprovalDocumentPage(),
-                SafetyPatrolApprovalPage(),
+                MySafetyPatrolSubmissionsPage(),
+                NeedActionPatrolPage(),
               ],
             ),
           ),

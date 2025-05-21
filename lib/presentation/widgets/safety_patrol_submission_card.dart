@@ -5,14 +5,14 @@ import 'package:safeships_flutter/theme.dart';
 
 class SafetyPatrolSubmissionCard extends StatelessWidget {
   final SafetyPatrolModel patrol;
-  const SafetyPatrolSubmissionCard({super.key, required this.patrol});
+  final VoidCallback onTap;
+  const SafetyPatrolSubmissionCard(
+      {super.key, required this.patrol, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        print('Tapped on patrol: ${patrol.location}');
-      },
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         margin: const EdgeInsets.symmetric(vertical: 5),
@@ -70,7 +70,7 @@ class SafetyPatrolSubmissionCard extends StatelessWidget {
                         .toString()
                         .split('.')
                         .last
-                        .replaceAll('_', ' ')
+                        .replaceAll(' ', ' ')
                         .toUpperCase(),
                     style: primaryTextStyle.copyWith(
                       fontSize: 10,

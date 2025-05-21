@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
@@ -19,13 +18,13 @@ class Sidebar extends StatelessWidget {
           )
           .then(
         (value) {
-          context.read<DashboardProvider>().resetMenu();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => LoginPage(),
             ),
           );
+          context.read<DashboardProvider>().resetMenu();
         },
       );
     }
@@ -54,37 +53,39 @@ class Sidebar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ...dashboardProvider.dashboardMenu.asMap().entries.map(
-                    (entry) {
-                      int index = entry.key;
-                      var item = entry.value;
-                      bool isSelected = dashboardProvider.currentIndex == index;
+                  if (dashboardProvider.dashboardMenu.isNotEmpty)
+                    ...dashboardProvider.dashboardMenu.asMap().entries.map(
+                      (entry) {
+                        int index = entry.key;
+                        var item = entry.value;
+                        bool isSelected =
+                            dashboardProvider.currentIndex == index;
 
-                      return ListTile(
-                        leading: isSelected ? item[2] : item[1],
-                        title: Text(
-                          item[0],
-                          style: TextStyle(
-                            color: isSelected
-                                ? primaryColor800
-                                : subtitleTextColor,
-                            fontSize: 14,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                        return ListTile(
+                          leading: isSelected ? item[2] : item[1],
+                          title: Text(
+                            item[0],
+                            style: TextStyle(
+                              color: isSelected
+                                  ? primaryColor800
+                                  : subtitleTextColor,
+                              fontSize: 14,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
                           ),
-                        ),
-                        tileColor: isSelected
-                            ? primaryColor800.withOpacity(0.1)
-                            : null,
-                        onTap: () {
-                          dashboardProvider.setIndex(index);
-                          Navigator.pop(
-                              context); // Close sidebar after selection
-                        },
-                      );
-                    },
-                  ),
+                          tileColor: isSelected
+                              ? primaryColor800.withOpacity(0.1)
+                              : null,
+                          onTap: () {
+                            dashboardProvider.setIndex(index);
+                            Navigator.pop(
+                                context); // Close sidebar after selection
+                          },
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

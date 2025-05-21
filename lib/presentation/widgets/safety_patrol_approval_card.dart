@@ -1,35 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
-import 'package:safeships_flutter/models/auth_model.dart';
-import 'package:safeships_flutter/models/document_model.dart';
-import 'package:safeships_flutter/presentation/pages/document/detail_document_page.dart';
-import 'package:safeships_flutter/providers/auth_provider.dart';
+import 'package:safeships_flutter/models/safety_patrol/safety_patrol_card_model.dart';
 import 'package:safeships_flutter/theme.dart';
 
-class DocumentApprovalCard extends StatelessWidget {
-  final DocumentModel doc;
+class SafetyPatrolApprovalCard extends StatelessWidget {
+  final SafetyPatrolCardModel patrol;
   final int userId;
-  const DocumentApprovalCard(
-      {super.key, required this.doc, required this.userId});
+  final VoidCallback onTap;
+
+  const SafetyPatrolApprovalCard({
+    super.key,
+    required this.patrol,
+    required this.userId,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    String approval = doc.documentApprovals!
-        .firstWhere(
-          (approval) => approval.approverId == userId,
-        )
-        .status;
+    String approval = patrol.userApprovalStatus!.replaceAll('_', ' ');
     return GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailDocumentPage(
-              viewMode: DocumentViewMode.managerial,
-              userId: userId,
-              doc: doc,
-            ),
-          )),
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -40,8 +30,8 @@ class DocumentApprovalCard extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: (approval == 'pending' &&
-                  doc.status != 'approved' &&
-                  doc.status != 'rejected')
+                  patrol.status != 'done' &&
+                  patrol.status != 'rejected')
               ? whiteColor
               : disabledColor.withOpacity(0.4),
           borderRadius: const BorderRadius.all(
@@ -69,7 +59,7 @@ class DocumentApprovalCard extends StatelessWidget {
                     color: primaryColor50.withOpacity(0.5),
                   ),
                   child: Text(
-                    doc.category.code,
+                    patrol.type.toUpperCase(),
                     style: primaryTextStyle.copyWith(
                       fontSize: 10,
                       color: primaryColor500,
@@ -92,16 +82,16 @@ class DocumentApprovalCard extends StatelessWidget {
                     ),
                     border: Border.all(
                       width: 0.5,
-                      color: AppHelper.getColorBasedOnStatus(doc.status),
+                      color: AppHelper.getColorBasedOnStatus(patrol.status),
                     ),
-                    color: AppHelper.getColorBasedOnStatus(doc.status)
+                    color: AppHelper.getColorBasedOnStatus(patrol.status)
                         .withOpacity(0.1),
                   ),
                   child: Text(
-                    doc.status.replaceAll('_', ' ').toUpperCase(),
+                    patrol.status.replaceAll('_', ' ').toUpperCase(),
                     style: primaryTextStyle.copyWith(
                       fontSize: 10,
-                      color: AppHelper.getColorBasedOnStatus(doc.status),
+                      color: AppHelper.getColorBasedOnStatus(patrol.status),
                       fontWeight: semibold,
                     ),
                     textAlign: TextAlign.justify,
@@ -113,7 +103,7 @@ class DocumentApprovalCard extends StatelessWidget {
               height: 10,
             ),
             Text(
-              doc.title,
+              patrol.location,
               style: primaryTextStyle.copyWith(
                 fontWeight: semibold,
                 fontSize: 16,
@@ -123,7 +113,19 @@ class DocumentApprovalCard extends StatelessWidget {
               height: 5,
             ),
             Text(
-              'Disubmit pada: ${AppHelper.formatDateToString(doc.createdAt)}',
+              patrol.description,
+              style: primaryTextStyle.copyWith(
+                color: subtitleTextColor,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              'Disubmit pada: ${AppHelper.formatDateToString(patrol.createdAt)}',
               style: primaryTextStyle.copyWith(
                 color: subtitleTextColor,
                 fontSize: 12,

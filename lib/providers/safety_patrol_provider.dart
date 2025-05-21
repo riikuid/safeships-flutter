@@ -1,13 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
 import 'package:safeships_flutter/models/safety_patrol/safety_patrol_approval_model.dart';
-import 'package:safeships_flutter/models/safety_patrol/safety_patrol_feedback_model.dart';
+import 'package:safeships_flutter/models/safety_patrol/safety_patrol_card_model.dart';
+import 'package:safeships_flutter/models/safety_patrol/safety_patrol_feedback_approval_model.dart';
 import 'package:safeships_flutter/models/safety_patrol/safety_patrol_model.dart';
-import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/services/safety_patrol_service.dart';
 
 class SafetyPatrolProvider with ChangeNotifier {
@@ -17,14 +16,15 @@ class SafetyPatrolProvider with ChangeNotifier {
   List<ManagerModel> _managers = [];
   List<ManagerModel> get managers => _managers;
 
-  List<SafetyPatrolModel> _managerialPatrols = [];
-  List<SafetyPatrolModel> get managerialPatrols => _managerialPatrols;
+  List<SafetyPatrolCardModel> _managerialPatrols = [];
+  List<SafetyPatrolCardModel> get managerialPatrols => _managerialPatrols;
 
   List<SafetyPatrolModel> _mySubmissions = [];
   List<SafetyPatrolModel> get mySubmissions => _mySubmissions;
 
-  List<SafetyPatrolModel> _myActions = [];
-  List<SafetyPatrolModel> get myActions => _myActions;
+  List<SafetyPatrolCardModel> _myActions =
+      []; // Changed to SafetyPatrolCardModel
+  List<SafetyPatrolCardModel> get myActions => _myActions;
 
   Future<void> getManagers({
     void Function(dynamic)? errorCallback,
@@ -42,7 +42,7 @@ class SafetyPatrolProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> submitSafetyPatrol({
+  Future<SafetyPatrolModel> submitSafetyPatrol({
     required String managerId,
     required String reportDate,
     required String pathFile,
@@ -52,7 +52,7 @@ class SafetyPatrolProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      bool result = await _safetyPatrolService.submitSafetyPatrol(
+      SafetyPatrolModel result = await _safetyPatrolService.submitSafetyPatrol(
         token: (await tokenRepository.getToken())!,
         managerId: managerId,
         reportDate: reportDate,
@@ -62,23 +62,27 @@ class SafetyPatrolProvider with ChangeNotifier {
         location: location,
       );
 
+      _mySubmissions = [..._mySubmissions, result];
       notifyListeners();
       return result;
     } on SocketException {
       errorCallback?.call("Terjadi Kesalahan Koneksi");
-      return false;
+      rethrow;
     } catch (e) {
       errorCallback?.call(e);
-      return false;
+      rethrow;
     }
   }
 
   Future<void> getManagerial({
     void Function(dynamic)? errorCallback,
+    String? status,
   }) async {
     try {
-      List<SafetyPatrolModel> result = await _safetyPatrolService.getManagerial(
+      List<SafetyPatrolCardModel> result =
+          await _safetyPatrolService.getManagerial(
         token: (await tokenRepository.getToken())!,
+        status: status,
       );
 
       _managerialPatrols = result;
@@ -89,8 +93,9 @@ class SafetyPatrolProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> approveSafetyPatrol({
+  Future<SafetyPatrolModel> approveSafetyPatrol({
     required int patrolId,
+    required int userId,
     String? actorId,
     String? deadline,
     void Function(dynamic)? errorCallback,
@@ -105,29 +110,63 @@ class SafetyPatrolProvider with ChangeNotifier {
 
       _managerialPatrols = _managerialPatrols.map((patrol) {
         if (patrol.id == result.id) {
-          return result;
+          return SafetyPatrolCardModel(
+            id: result.id,
+            type: result.type.toString().split('.').last,
+            location: result.location,
+            description: result.description,
+            status: result.status,
+            createdAt: result.createdAt,
+            userApprovalStatus: result.approvals!
+                .firstWhere(
+                  (approval) => approval.approverId == userId,
+                  orElse: () => SafetyPatrolApprovalModel(
+                    id: 0,
+                    safetyPatrolId: patrolId,
+                    approverId: userId,
+                    status: 'approved',
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  ),
+                )
+                .status,
+          );
         }
         return patrol;
       }).toList();
 
       _mySubmissions = _mySubmissions.map((patrol) {
+        if (patrol.id == result.id) return result;
+        return patrol;
+      }).toList();
+
+      _myActions = _myActions.map((patrol) {
         if (patrol.id == result.id) {
-          return result;
+          return SafetyPatrolCardModel(
+            id: result.id,
+            type: result.type.toString().split('.').last,
+            location: result.location,
+            description: result.description,
+            status: result.status,
+            createdAt: result.createdAt,
+            deadline: DateTime.parse(deadline!), // Use the provided deadline
+          );
         }
         return patrol;
       }).toList();
 
       notifyListeners();
-      return true;
+      return result;
     } catch (error) {
       if (kDebugMode) log('Error approving safety patrol: $error');
       errorCallback?.call(error);
-      return false;
+      rethrow;
     }
   }
 
-  Future<bool> rejectSafetyPatrol({
+  Future<SafetyPatrolModel> rejectSafetyPatrol({
     required int patrolId,
+    required int userId,
     required String comments,
     void Function(dynamic)? errorCallback,
   }) async {
@@ -140,144 +179,140 @@ class SafetyPatrolProvider with ChangeNotifier {
 
       _managerialPatrols = _managerialPatrols.map((patrol) {
         if (patrol.id == result.id) {
-          return result;
+          return SafetyPatrolCardModel(
+            id: result.id,
+            type: result.type.toString().split('.').last,
+            location: result.location,
+            description: result.description,
+            status: result.status,
+            createdAt: result.createdAt,
+            userApprovalStatus: result.approvals!
+                .firstWhere(
+                  (approval) => approval.approverId == userId,
+                  orElse: () => SafetyPatrolApprovalModel(
+                    id: 0,
+                    safetyPatrolId: patrolId,
+                    approverId: userId,
+                    status: 'rejected',
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  ),
+                )
+                .status,
+          );
         }
         return patrol;
       }).toList();
 
       _mySubmissions = _mySubmissions.map((patrol) {
+        if (patrol.id == result.id) return result;
+        return patrol;
+      }).toList();
+
+      _myActions = _myActions.map((patrol) {
         if (patrol.id == result.id) {
-          return result;
+          return SafetyPatrolCardModel(
+            id: result.id,
+            type: result.type.toString().split('.').last,
+            location: result.location,
+            description: result.description,
+            status: result.status,
+            createdAt: result.createdAt,
+            deadline: patrol.deadline, // Preserve existing deadline
+          );
         }
         return patrol;
       }).toList();
 
       notifyListeners();
-      return true;
+      return result;
     } catch (error) {
       if (kDebugMode) log('Error rejecting safety patrol: $error');
       errorCallback?.call(error);
-      return false;
+      rethrow;
     }
   }
 
-  Future<bool> approveFeedback({
+  Future<SafetyPatrolModel> approveFeedback({
     required int feedbackId,
     required int patrolId,
+    required int userId,
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      SafetyPatrolFeedbackModel result =
-          await _safetyPatrolService.approveFeedback(
+      SafetyPatrolModel result = await _safetyPatrolService.approveFeedback(
         token: (await tokenRepository.getToken())!,
         feedbackId: feedbackId,
       );
 
       _managerialPatrols = _managerialPatrols.map((patrol) {
         if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
+          return SafetyPatrolCardModel(
             id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
             type: patrol.type,
-            description: patrol.description,
             location: patrol.location,
-            status: result.status == ApprovalStatus.approved
-                ? SafetyPatrolStatus.done
-                : patrol.status,
+            description: patrol.description,
+            status: result.status,
             createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
+            userApprovalStatus: result.feedbacks
+                    ?.firstWhere((f) => f.id == feedbackId)
+                    .approvals
+                    ?.firstWhere(
+                      (approval) => approval.approverId == userId,
+                      orElse: () => SafetyPatrolFeedbackApprovalModel(
+                        id: 0,
+                        feedbackId: feedbackId,
+                        approverId: userId,
+                        status: 'approved',
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ),
+                    )
+                    .status ??
+                patrol.userApprovalStatus,
           );
         }
         return patrol;
       }).toList();
 
       _mySubmissions = _mySubmissions.map((patrol) {
-        if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
-            id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
-            type: patrol.type,
-            description: patrol.description,
-            location: patrol.location,
-            status: result.status == ApprovalStatus.approved
-                ? SafetyPatrolStatus.done
-                : patrol.status,
-            createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
-          );
-        }
+        if (patrol.id == patrolId) return result;
         return patrol;
       }).toList();
 
       _myActions = _myActions.map((patrol) {
         if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
+          return SafetyPatrolCardModel(
             id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
             type: patrol.type,
-            description: patrol.description,
             location: patrol.location,
-            status: result.status == ApprovalStatus.approved
-                ? SafetyPatrolStatus.done
-                : patrol.status,
+            description: patrol.description,
+            status: result.status,
             createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
+            deadline: patrol.deadline, // Preserve existing deadline
           );
         }
         return patrol;
       }).toList();
 
       notifyListeners();
-      return true;
+      return result;
     } catch (error) {
       if (kDebugMode) log('Error approving feedback: $error');
       errorCallback?.call(error);
-      return false;
+      rethrow;
     }
   }
 
-  Future<bool> rejectFeedback({
+  Future<SafetyPatrolModel> rejectFeedback({
     required int feedbackId,
     required int patrolId,
+    required int userId,
     required String comments,
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      SafetyPatrolFeedbackModel result =
-          await _safetyPatrolService.rejectFeedback(
+      SafetyPatrolModel result = await _safetyPatrolService.rejectFeedback(
         token: (await tokenRepository.getToken())!,
         feedbackId: feedbackId,
         comments: comments,
@@ -285,91 +320,60 @@ class SafetyPatrolProvider with ChangeNotifier {
 
       _managerialPatrols = _managerialPatrols.map((patrol) {
         if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
+          return SafetyPatrolCardModel(
             id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
             type: patrol.type,
-            description: patrol.description,
             location: patrol.location,
-            status: SafetyPatrolStatus.pendingAction,
+            description: patrol.description,
+            status: result.status,
             createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
+            userApprovalStatus: result.feedbacks
+                    ?.firstWhere((f) => f.id == feedbackId)
+                    .approvals
+                    ?.firstWhere(
+                      (approval) => approval.approverId == userId,
+                      orElse: () => SafetyPatrolFeedbackApprovalModel(
+                        id: 0,
+                        feedbackId: feedbackId,
+                        approverId: userId,
+                        status: 'rejected',
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ),
+                    )
+                    .status ??
+                patrol.userApprovalStatus,
           );
         }
         return patrol;
       }).toList();
 
       _mySubmissions = _mySubmissions.map((patrol) {
-        if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
-            id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
-            type: patrol.type,
-            description: patrol.description,
-            location: patrol.location,
-            status: SafetyPatrolStatus.pendingAction,
-            createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
-          );
-        }
+        if (patrol.id == patrolId) return result;
         return patrol;
       }).toList();
 
       _myActions = _myActions.map((patrol) {
         if (patrol.id == patrolId) {
-          return SafetyPatrolModel(
+          return SafetyPatrolCardModel(
             id: patrol.id,
-            userId: patrol.userId,
-            managerId: patrol.managerId,
-            reportDate: patrol.reportDate,
-            imagePath: patrol.imagePath,
             type: patrol.type,
-            description: patrol.description,
             location: patrol.location,
-            status: SafetyPatrolStatus.pendingAction,
+            description: patrol.description,
+            status: result.status,
             createdAt: patrol.createdAt,
-            updatedAt: patrol.updatedAt,
-            deletedAt: patrol.deletedAt,
-            user: patrol.user,
-            manager: patrol.manager,
-            approvals: patrol.approvals,
-            action: patrol.action,
-            feedbacks: patrol.feedbacks
-                ?.map((f) => f.id == feedbackId ? result : f)
-                .toList(),
+            deadline: patrol.deadline, // Preserve existing deadline
           );
         }
         return patrol;
       }).toList();
 
       notifyListeners();
-      return true;
+      return result;
     } catch (error) {
       if (kDebugMode) log('Error rejecting feedback: $error');
       errorCallback?.call(error);
-      return false;
+      rethrow;
     }
   }
 
@@ -393,12 +397,14 @@ class SafetyPatrolProvider with ChangeNotifier {
 
   Future<void> getMySubmissions({
     required Function(String) errorCallback,
+    String? status,
   }) async {
     try {
       final token = await tokenRepository.getToken();
-      if (token == null) throw 'No token found';
+      if (token == null) throw 'Tidak ada token';
       _mySubmissions = await _safetyPatrolService.getMySubmissions(
         token: token,
+        status: status,
       );
       notifyListeners();
     } catch (e) {
@@ -408,12 +414,14 @@ class SafetyPatrolProvider with ChangeNotifier {
 
   Future<void> getMyActions({
     required Function(String) errorCallback,
+    String? status,
   }) async {
     try {
       final token = await tokenRepository.getToken();
-      if (token == null) throw 'No token found';
+      if (token == null) throw 'Tidak ada token';
       _myActions = await _safetyPatrolService.getMyActions(
         token: token,
+        status: status,
       );
       notifyListeners();
     } catch (e) {
@@ -421,7 +429,7 @@ class SafetyPatrolProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> submitFeedback({
+  Future<SafetyPatrolModel> submitFeedback({
     required int patrolId,
     required String feedbackDate,
     required String pathFile,
@@ -429,7 +437,7 @@ class SafetyPatrolProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      bool result = await _safetyPatrolService.submitFeedback(
+      SafetyPatrolModel result = await _safetyPatrolService.submitFeedback(
         token: (await tokenRepository.getToken())!,
         patrolId: patrolId,
         feedbackDate: feedbackDate,
@@ -437,14 +445,34 @@ class SafetyPatrolProvider with ChangeNotifier {
         description: description,
       );
 
+      _myActions = _myActions.map((patrol) {
+        if (patrol.id == result.id) {
+          return SafetyPatrolCardModel(
+            id: patrol.id,
+            type: patrol.type,
+            location: patrol.location,
+            description: patrol.description,
+            status: result.status,
+            createdAt: patrol.createdAt,
+            deadline: patrol.deadline, // Preserve existing deadline
+          );
+        }
+        return patrol;
+      }).toList();
+
+      _mySubmissions = _mySubmissions.map((patrol) {
+        if (patrol.id == result.id) return result;
+        return patrol;
+      }).toList();
+
       notifyListeners();
       return result;
     } on SocketException {
       errorCallback?.call("Terjadi Kesalahan Koneksi");
-      return false;
+      rethrow;
     } catch (e) {
       errorCallback?.call(e);
-      return false;
+      rethrow;
     }
   }
 

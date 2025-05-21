@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/my_documentation_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/my_safety_patrol_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/safety_patrol_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/user_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -56,6 +58,20 @@ class DashboardProvider with ChangeNotifier {
       const MyDocumentationSubmissionsPage(),
     ],
     [
+      'Safety Patrol',
+      Icon(
+        Icons.archive_outlined,
+        color: subtitleTextColor,
+        size: 16,
+      ),
+      Icon(
+        Icons.archive_rounded,
+        color: primaryColor800,
+        size: 16,
+      ),
+      const SafetyPatrolPage(),
+    ],
+    [
       'User Management',
       Icon(
         Icons.people_outline,
@@ -102,7 +118,9 @@ class DashboardProvider with ChangeNotifier {
     } else if (role == 'user') {
       _dashboardMenu = _allMenuItems
           .where((item) =>
-              item[0] == 'Home' || item[0] == 'My Documentation Submission')
+              item[0] == 'Home' ||
+              item[0] == 'My Documentation Submission' ||
+              item[0] == 'Safety Patrol')
           .toList(); // User gets only Home and My Submissions
     } else {
       _dashboardMenu = []; // Fallback for unknown role

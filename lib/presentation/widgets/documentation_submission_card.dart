@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
 import 'package:safeships_flutter/models/document_model.dart';
-import 'package:safeships_flutter/presentation/pages/approval/detail_document_approval_page.dart';
+import 'package:safeships_flutter/presentation/pages/document/detail_document_page.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class DocumentationSubmissionCard extends StatelessWidget {

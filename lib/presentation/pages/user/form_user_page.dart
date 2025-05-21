@@ -185,7 +185,7 @@ class _FormUserPageState extends State<FormUserPage> {
                   fillColor: whiteColor,
                   enabled: !widget.isResetPassword,
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 CustomTextField(
                   labelText: 'Email',
                   hintText: 'Masukkan email',
@@ -195,7 +195,7 @@ class _FormUserPageState extends State<FormUserPage> {
                   fillColor: whiteColor,
                   enabled: !widget.isResetPassword,
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Text(
                   'Role',
                   style: primaryTextStyle.copyWith(
@@ -203,7 +203,7 @@ class _FormUserPageState extends State<FormUserPage> {
                     fontWeight: medium,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 if (widget.isResetPassword)
                   CustomTextField(
                     keyboardType: TextInputType.name,

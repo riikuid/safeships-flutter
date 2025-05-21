@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/category_model.dart';
 import 'package:safeships_flutter/models/document_model.dart';
-import 'package:safeships_flutter/presentation/pages/approval/detail_document_approval_page.dart';
+import 'package:safeships_flutter/presentation/pages/document/detail_document_page.dart';
 import 'package:safeships_flutter/presentation/widgets/category_with_docs_card.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
 import 'package:safeships_flutter/theme.dart';

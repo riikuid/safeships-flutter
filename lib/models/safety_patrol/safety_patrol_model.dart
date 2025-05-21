@@ -7,16 +7,6 @@ import 'package:safeships_flutter/models/user_model.dart';
 
 enum SafetyPatrolType { condition, unsafeAction }
 
-enum SafetyPatrolStatus {
-  pendingSuperAdmin,
-  pendingManager,
-  pendingAction,
-  actionInProgress,
-  pendingFeedbackApproval,
-  done,
-  rejected
-}
-
 class SafetyPatrolModel {
   final int id;
   final int userId;
@@ -26,7 +16,7 @@ class SafetyPatrolModel {
   final SafetyPatrolType type;
   final String description;
   final String location;
-  final SafetyPatrolStatus status;
+  final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -72,10 +62,7 @@ class SafetyPatrolModel {
         ),
         description: json["description"],
         location: json["location"],
-        status: SafetyPatrolStatus.values.firstWhere(
-          (e) => e.toString().split('.').last == json["status"],
-          orElse: () => SafetyPatrolStatus.pendingSuperAdmin,
-        ),
+        status: json["status"] ?? "pending_super_admin",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"] != null

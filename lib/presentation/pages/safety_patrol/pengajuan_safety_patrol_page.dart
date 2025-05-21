@@ -74,7 +74,7 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
           )
           .then(
         (value) {
-          if (value) {
+          if (value != null) {
             Fluttertoast.showToast(
               msg: 'Berhasil Mengajukan Laporan Baru, Menunggu Persetujuan',
             );
@@ -418,14 +418,14 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
                                 });
                               }
                             },
-                            popupProps: PopupProps.modalBottomSheet(
+                            popupProps: PopupProps.menu(
                               showSelectedItems: true,
-                              modalBottomSheetProps: ModalBottomSheetProps(
-                                padding: const EdgeInsets.all(50),
-                                backgroundColor: whiteColor,
-                                elevation: 2,
-                                showDragHandle: true,
-                              ),
+                              // modalBottomSheetProps: ModalBottomSheetProps(
+                              //   padding: const EdgeInsets.all(50),
+                              //   backgroundColor: whiteColor,
+                              //   elevation: 2,
+                              //   showDragHandle: true,
+                              // ),
                               showSearchBox: true,
                               searchFieldProps: TextFieldProps(
                                 decoration: InputDecoration(

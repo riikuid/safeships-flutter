@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/safety_patrol/detail_safety_patrol_page.dart';
+import 'package:safeships_flutter/presentation/widgets/safety_patrol_action_card.dart';
+import 'package:safeships_flutter/presentation/widgets/safety_patrol_approval_card.dart';
 import 'package:safeships_flutter/presentation/widgets/safety_patrol_submission_card.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
-class MySafetyPatrolSubmissionsPage extends StatefulWidget {
-  const MySafetyPatrolSubmissionsPage({super.key});
+class NeedActionPatrolPage extends StatefulWidget {
+  const NeedActionPatrolPage({super.key});
 
   @override
-  State<MySafetyPatrolSubmissionsPage> createState() =>
-      _MySafetyPatrolSubmissionsPageState();
+  State<NeedActionPatrolPage> createState() => _NeedActionPatrolPageState();
 }
 
-class _MySafetyPatrolSubmissionsPageState
-    extends State<MySafetyPatrolSubmissionsPage> {
+class _NeedActionPatrolPageState extends State<NeedActionPatrolPage> {
   late Future<void> futureGetSubmissions;
   late SafetyPatrolProvider safetyPatrolProvider;
   String errorText = "Gagal mendapatkan laporan Anda";
@@ -32,7 +32,7 @@ class _MySafetyPatrolSubmissionsPageState
   }
 
   Future<void> getSubmissions() async {
-    await safetyPatrolProvider.getMySubmissions(
+    await safetyPatrolProvider.getMyActions(
       errorCallback: (p0) => setState(() {
         errorText = p0;
       }),
@@ -60,7 +60,7 @@ class _MySafetyPatrolSubmissionsPageState
           builder: (context) => DetailSafetyPatrolPage(
             initialPatrol: patrol,
             userId: authProvider.user.id,
-            viewMode: SafetyPatrolViewMode.submitter,
+            viewMode: SafetyPatrolViewMode.actor,
           ),
         ),
       );
@@ -128,8 +128,10 @@ class _MySafetyPatrolSubmissionsPageState
                           },
                           color: primaryColor500,
                           child: ListView(
-                            children: safetyPatrolProvider.mySubmissions
-                                .map((patrol) => SafetyPatrolSubmissionCard(
+                            children: safetyPatrolProvider.myActions
+                                .map((patrol) => SafetyPatrolActionCard(
+                                      userId:
+                                          context.read<AuthProvider>().user.id,
                                       patrol: patrol,
                                       onTap: () => _navigateToDetail(patrol.id,
                                           context.read<AuthProvider>().user.id),
