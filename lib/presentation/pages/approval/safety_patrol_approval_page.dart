@@ -52,14 +52,6 @@ class _SafetyPatrolApprovalPageState extends State<SafetyPatrolApprovalPage> {
       );
 
       // Tentukan view mode
-      SafetyPatrolViewMode viewMode;
-      if (authProvider.user.id == patrol.action?.actorId) {
-        viewMode = SafetyPatrolViewMode.actor;
-      } else if (authProvider.user.id == patrol.userId) {
-        viewMode = SafetyPatrolViewMode.submitter;
-      } else {
-        viewMode = SafetyPatrolViewMode.approver;
-      }
 
       Navigator.push(
         context,
@@ -67,7 +59,7 @@ class _SafetyPatrolApprovalPageState extends State<SafetyPatrolApprovalPage> {
           builder: (context) => DetailSafetyPatrolPage(
             initialPatrol: patrol,
             userId: authProvider.user.id,
-            viewMode: viewMode,
+            viewMode: SafetyPatrolViewMode.approver,
           ),
         ),
       );

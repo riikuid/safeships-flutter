@@ -44,7 +44,7 @@ class DashboardProvider with ChangeNotifier {
       const ApprovalPage(),
     ],
     [
-      'My Documentation Submission',
+      'My Documentation',
       Icon(
         Icons.archive_outlined,
         color: subtitleTextColor,
@@ -119,9 +119,9 @@ class DashboardProvider with ChangeNotifier {
       _dashboardMenu = _allMenuItems
           .where((item) =>
               item[0] == 'Home' ||
-              item[0] == 'My Documentation Submission' ||
+              item[0] == 'My Documentation' ||
               item[0] == 'Safety Patrol')
-          .toList(); // User gets only Home and My Submissions
+          .toList(); // User gets only Home and Mys
     } else {
       _dashboardMenu = []; // Fallback for unknown role
     }

@@ -41,7 +41,13 @@ class SafetyPatrolSubmissionCard extends StatelessWidget {
                     color: primaryColor50,
                   ),
                   child: Text(
-                    patrol.type.toString().split('.').last.toUpperCase(),
+                    patrol.type
+                        .toString()
+                        .split('.')
+                        .last
+                        .split(RegExp(r'(?<=[a-z])(?=[A-Z])'))
+                        .join(' ')
+                        .toUpperCase(),
                     style: primaryTextStyle.copyWith(
                       fontSize: 10,
                       color: primaryColor500,
@@ -66,12 +72,7 @@ class SafetyPatrolSubmissionCard extends StatelessWidget {
                         .withOpacity(0.1),
                   ),
                   child: Text(
-                    patrol.status
-                        .toString()
-                        .split('.')
-                        .last
-                        .replaceAll(' ', ' ')
-                        .toUpperCase(),
+                    patrol.status.replaceAll('_', ' ').toUpperCase(),
                     style: primaryTextStyle.copyWith(
                       fontSize: 10,
                       color: AppHelper.getColorBasedOnStatus(

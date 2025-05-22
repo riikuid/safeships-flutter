@@ -5,12 +5,12 @@ import 'package:safeships_flutter/models/safety_patrol/safety_patrol_approval_mo
 import 'package:safeships_flutter/models/safety_patrol/safety_patrol_feedback_model.dart';
 import 'package:safeships_flutter/models/user_model.dart';
 
-enum SafetyPatrolType { condition, unsafeAction }
+enum SafetyPatrolType { unsafeCondition, unsafeAction }
 
 class SafetyPatrolModel {
   final int id;
   final int userId;
-  final int managerId;
+  final String managerId;
   final DateTime reportDate;
   final String imagePath;
   final SafetyPatrolType type;
@@ -53,12 +53,12 @@ class SafetyPatrolModel {
       SafetyPatrolModel(
         id: json["id"],
         userId: json["user_id"],
-        managerId: json["manager_id"],
+        managerId: json["manager_id"].toString(),
         reportDate: DateTime.parse(json["report_date"]),
         imagePath: json["image_path"],
         type: SafetyPatrolType.values.firstWhere(
           (e) => e.toString().split('.').last == json["type"],
-          orElse: () => SafetyPatrolType.condition,
+          orElse: () => SafetyPatrolType.unsafeCondition,
         ),
         description: json["description"],
         location: json["location"],

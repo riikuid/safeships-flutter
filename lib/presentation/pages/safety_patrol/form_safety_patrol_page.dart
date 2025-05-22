@@ -366,7 +366,7 @@ class _FormSafetyPatrolPageState extends State<FormSafetyPatrolPage> {
                                 ),
                               ),
                               value: _selectedType,
-                              items: ['condition', 'unsafe_action']
+                              items: ['unsafe_condition', 'unsafe_action']
                                   .map((role) => DropdownMenuItem(
                                         value: role,
                                         child: Text(

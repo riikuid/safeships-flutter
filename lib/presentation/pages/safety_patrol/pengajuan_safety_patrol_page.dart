@@ -70,6 +70,9 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
             location: _locationController.text,
             errorCallback: (p0) {
               Fluttertoast.showToast(msg: p0.toString());
+              setState(() {
+                _isLoading = false;
+              });
             },
           )
           .then(
@@ -272,12 +275,26 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Gambar',
-                            style: primaryTextStyle.copyWith(
-                              color: blackColor,
-                              fontSize: 12,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                'Gambar',
+                                style: primaryTextStyle.copyWith(
+                                  color: blackColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '(Maksimal 5 mb)',
+                                style: primaryTextStyle.copyWith(
+                                  color: subtitleTextColor,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 5),
                           pickFileField(),
@@ -329,7 +346,7 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
                               ),
                             ),
                             value: _selectedType,
-                            items: ['condition', 'unsafe_action']
+                            items: ['unsafe_condition', 'unsafe_action']
                                 .map((role) => DropdownMenuItem(
                                       value: role,
                                       child: Text(
