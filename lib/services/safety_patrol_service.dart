@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
@@ -345,6 +346,35 @@ class SafetyPatrolService {
       return SafetyPatrolModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ?? 'Gagal mengirim feedback';
+    }
+  }
+
+  Future<Map<String, dynamic>> getReportData({
+    required String token,
+    int? year,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/safety-patrols/report-data';
+    if (year != null) {
+      url += '?year=$year';
+    }
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/safety-patrols/report-data response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return data;
+    } else {
+      throw jsonDecode(response.body)['message'] ??
+          'Gagal mengambil data laporan';
     }
   }
 }

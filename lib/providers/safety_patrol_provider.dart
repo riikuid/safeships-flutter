@@ -22,9 +22,19 @@ class SafetyPatrolProvider with ChangeNotifier {
   List<SafetyPatrolModel> _mySubmissions = [];
   List<SafetyPatrolModel> get mySubmissions => _mySubmissions;
 
-  List<SafetyPatrolCardModel> _myActions =
-      []; // Changed to SafetyPatrolCardModel
+  List<SafetyPatrolCardModel> _myActions = [];
   List<SafetyPatrolCardModel> get myActions => _myActions;
+
+  // Data untuk chart laporan
+  Map<String, dynamic> _reportData = {'labels': [], 'datasets': []};
+  Map<String, dynamic> get reportData => _reportData;
+
+  // Status loading dan error untuk chart
+  bool _isReportLoading = false;
+  bool get isReportLoading => _isReportLoading;
+
+  String? _reportError;
+  String? get reportError => _reportError;
 
   Future<void> getManagers({
     void Function(dynamic)? errorCallback,
@@ -424,7 +434,9 @@ class SafetyPatrolProvider with ChangeNotifier {
         status: status,
       );
       notifyListeners();
+      log(myActions.length.toString());
     } catch (e) {
+      if (kDebugMode) log('Error fetching safety patrol: $e');
       errorCallback(e.toString());
     }
   }
@@ -473,6 +485,33 @@ class SafetyPatrolProvider with ChangeNotifier {
     } catch (e) {
       errorCallback?.call(e);
       rethrow;
+    }
+  }
+
+  Future<void> fetchReportData({
+    int? year,
+    required Function(String) errorCallback,
+  }) async {
+    try {
+      _isReportLoading = true;
+      _reportError = null;
+      notifyListeners();
+
+      final token = await tokenRepository.getToken();
+      if (token == null) throw 'Tidak ada token';
+
+      _reportData = await _safetyPatrolService.getReportData(
+        token: token,
+        year: year,
+      );
+
+      _isReportLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isReportLoading = false;
+      _reportError = e.toString();
+      notifyListeners();
+      errorCallback(e.toString());
     }
   }
 

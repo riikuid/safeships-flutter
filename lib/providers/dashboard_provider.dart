@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/my_documentation_submissions_page.dart';
-import 'package:safeships_flutter/presentation/pages/dashboard/my_safety_patrol_submissions_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/safety_patrol_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/user_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
@@ -28,20 +28,6 @@ class DashboardProvider with ChangeNotifier {
         size: 16,
       ),
       const HomePage(),
-    ],
-    [
-      'Approvals',
-      Icon(
-        Icons.fact_check_outlined,
-        color: subtitleTextColor,
-        size: 16,
-      ),
-      Icon(
-        Icons.fact_check_rounded,
-        color: primaryColor800,
-        size: 16,
-      ),
-      const ApprovalPage(),
     ],
     [
       'My Documentation',
@@ -70,6 +56,34 @@ class DashboardProvider with ChangeNotifier {
         size: 16,
       ),
       const SafetyPatrolPage(),
+    ],
+    [
+      'Dashboard',
+      Icon(
+        Icons.analytics_outlined,
+        color: subtitleTextColor,
+        size: 16,
+      ),
+      Icon(
+        Icons.analytics_rounded,
+        color: primaryColor800,
+        size: 16,
+      ),
+      const DashboardPage(),
+    ],
+    [
+      'Approvals',
+      Icon(
+        Icons.fact_check_outlined,
+        color: subtitleTextColor,
+        size: 16,
+      ),
+      Icon(
+        Icons.fact_check_rounded,
+        color: primaryColor800,
+        size: 16,
+      ),
+      const ApprovalPage(),
     ],
     [
       'User Management',
@@ -104,6 +118,14 @@ class DashboardProvider with ChangeNotifier {
     }
   }
 
+  void setIndexByPageName(String pageName) {
+    final index = _dashboardMenu.indexWhere((item) => item[0] == pageName);
+    if (index != -1) {
+      _currentIndex = index;
+      notifyListeners();
+    }
+  }
+
   // Update menu based on user role
   void _updateMenu(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -113,7 +135,8 @@ class DashboardProvider with ChangeNotifier {
       _dashboardMenu = _allMenuItems; // Super Admin gets all menu items
     } else if (role == 'manager') {
       _dashboardMenu = _allMenuItems
-          .where((item) => item[0] != 'User Management')
+          .where(
+              (item) => item[0] != 'User Management' && item[0] != 'Dashboard')
           .toList(); // Manager gets all except User Management
     } else if (role == 'user') {
       _dashboardMenu = _allMenuItems

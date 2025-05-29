@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/category_model.dart';
@@ -340,6 +341,64 @@ class DocumentService {
     } else {
       throw Exception(
           'Gagal mengambil data progres penilaian: ${response.statusCode}');
+    }
+  }
+
+  Future<Uint8List> downloadAllDocuments({
+    required String token,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/download-all';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/zip',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      log('GET /api/documents/download-all response: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // Return ZIP file as bytes
+      } else {
+        throw jsonDecode(response.body)['message'] ??
+            'Failed to download documents';
+      }
+    } catch (e) {
+      log('Error downloading documents: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteAllDocuments({
+    required String token,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/documents/delete-all';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      log('DELETE /api/documents/delete-all response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        return; // Success, no data returned
+      } else {
+        throw jsonDecode(response.body)['message'] ??
+            'Failed to delete all documents';
+      }
+    } catch (e) {
+      log('Error deleting all documents: $e');
+      rethrow;
     }
   }
 }

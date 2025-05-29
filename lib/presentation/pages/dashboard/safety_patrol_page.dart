@@ -52,7 +52,7 @@ class _SafetyPatrolPageState extends State<SafetyPatrolPage>
               ),
               tabs: const [
                 Tab(text: 'My Submissions'),
-                Tab(text: 'Need Action'),
+                Tab(text: 'Perlu Tindak Lanjut'),
               ],
             ),
           ),

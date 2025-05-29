@@ -11,22 +11,24 @@ class Sidebar extends StatelessWidget {
     var dashboardProvider = Provider.of<DashboardProvider>(context);
 
     _handleLogout() async {
-      await context
-          .read<AuthProvider>()
-          .logout(
-            errorCallback: (p0) {},
-          )
-          .then(
-        (value) {
+      final dashboardProvider = context.read<DashboardProvider>();
+      final authProvider = context.read<AuthProvider>();
+
+      await authProvider.logout(
+        errorCallback: (p0) {},
+      );
+
+      dashboardProvider.resetMenu();
+
+      // TUNDA navigasi agar tidak bentrok dengan notifyListeners()
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const LoginPage()),
           );
-          context.read<DashboardProvider>().resetMenu();
-        },
-      );
+        }
+      });
     }
 
     return Drawer(
@@ -105,10 +107,8 @@ class Sidebar extends StatelessWidget {
               ),
               onTap: () {
                 _handleLogout();
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(content: Text('Logging out...')),
-                // );
-                Navigator.pop(context); // Close sidebar after selection
+
+                Navigator.pop(context);
               },
             ),
           ],

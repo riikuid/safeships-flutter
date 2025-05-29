@@ -75,79 +75,94 @@ class _NeedActionPatrolPageState extends State<NeedActionPatrolPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: FutureBuilder(
-              future: futureGetSubmissions,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: 3,
-                    itemBuilder: (context, index) => Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        height: 40,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        color: Colors.grey,
-                      ),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      errorText,
-                      style: primaryTextStyle.copyWith(
-                        color: subtitleTextColor,
-                      ),
-                    ),
-                  );
-                } else {
-                  return Consumer<SafetyPatrolProvider>(
-                    builder: (context, safetyPatrolProvider, _) {
-                      if (safetyPatrolProvider.mySubmissions.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'Tidak ada laporan yang diajukan',
-                            style: primaryTextStyle.copyWith(
-                              color: subtitleTextColor,
-                            ),
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: FutureBuilder(
+                  future: futureGetSubmissions,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: 3,
+                        itemBuilder: (context, index) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            height: 40,
+                            margin: const EdgeInsets.only(bottom: 10),
+                            color: Colors.grey,
                           ),
-                        );
-                      } else {
-                        return RefreshIndicator(
-                          onRefresh: () async {
-                            setState(() {
-                              futureGetSubmissions = getSubmissions();
-                            });
-                          },
-                          color: primaryColor500,
-                          child: ListView(
-                            children: safetyPatrolProvider.myActions
-                                .map((patrol) => SafetyPatrolActionCard(
-                                      userId:
-                                          context.read<AuthProvider>().user.id,
-                                      patrol: patrol,
-                                      onTap: () => _navigateToDetail(patrol.id,
-                                          context.read<AuthProvider>().user.id),
-                                    ))
-                                .toList(),
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          errorText,
+                          style: primaryTextStyle.copyWith(
+                            color: subtitleTextColor,
                           ),
-                        );
-                      }
-                    },
-                  );
-                }
-              },
-            ),
+                        ),
+                      );
+                    } else {
+                      return Consumer<SafetyPatrolProvider>(
+                        builder: (context, safetyPatrolProvider, _) {
+                          if (safetyPatrolProvider.myActions.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'Tidak ada laporan yg perlu ditindak',
+                                style: primaryTextStyle.copyWith(
+                                  color: subtitleTextColor,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return RefreshIndicator(
+                              onRefresh: () async {
+                                setState(() {
+                                  futureGetSubmissions = getSubmissions();
+                                });
+                              },
+                              color: primaryColor500,
+                              child: ListView(
+                                children: safetyPatrolProvider.myActions
+                                    .map((patrol) => SafetyPatrolActionCard(
+                                          userId: context
+                                              .read<AuthProvider>()
+                                              .user
+                                              .id,
+                                          patrol: patrol,
+                                          onTap: () => _navigateToDetail(
+                                              patrol.id,
+                                              context
+                                                  .read<AuthProvider>()
+                                                  .user
+                                                  .id),
+                                        ))
+                                    .toList(),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        if (_isLoading)
+          ColoredBox(
+            color: blackColor.withOpacity(0.4),
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
     );
   }
 }

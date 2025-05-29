@@ -9,64 +9,43 @@ class GaugeProgressChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: whiteColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Progres Penilaian K3',
-            style: primaryTextStyle.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: progressData.asMap().entries.map((entry) {
+        final index = entry.key;
+        final data = entry.value;
+        return Column(
+          children: [
+            SizedBox(
+              width: 80,
+              height: 60,
+              child: CustomPaint(
+                painter: GaugePainter(
+                  progress: data['progress'].toDouble(),
+                  color: _getGaugeColor(index),
+                ),
+                child: Center(
+                  child: Text(
+                    '${data['progress'].toStringAsFixed(1)}%',
+                    style: primaryTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: progressData.asMap().entries.map((entry) {
-              final index = entry.key;
-              final data = entry.value;
-              return Column(
-                children: [
-                  SizedBox(
-                    width: 80,
-                    height: 60,
-                    child: CustomPaint(
-                      painter: GaugePainter(
-                        progress: data['progress'].toDouble(),
-                        color: _getGaugeColor(index),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${data['progress'].toStringAsFixed(1)}%',
-                          style: primaryTextStyle.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                      data['assessment'],
-                      style: primaryTextStyle.copyWith(fontSize: 10),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+            SizedBox(
+              width: 90,
+              child: Text(
+                data['assessment'],
+                style: primaryTextStyle.copyWith(fontSize: 10),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        );
+      }).toList(),
     );
   }
 

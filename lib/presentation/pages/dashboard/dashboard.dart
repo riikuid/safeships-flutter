@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/profile_page.dart';

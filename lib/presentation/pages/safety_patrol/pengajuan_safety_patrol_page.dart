@@ -81,7 +81,8 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
             Fluttertoast.showToast(
               msg: 'Berhasil Mengajukan Laporan Baru, Menunggu Persetujuan',
             );
-            context.read<DashboardProvider>().setIndex(2);
+            context.read<DashboardProvider>()
+              ..setIndexByPageName('Safety Patrol');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -141,7 +142,7 @@ class _PengajuanSafetyPatrolPageState extends State<PengajuanSafetyPatrolPage> {
     _descriptionController.dispose();
     _reportDateController.dispose();
     super.dispose();
-    context.read<SafetyPatrolProvider>().resetManagers();
+    // context.read<SafetyPatrolProvider>().resetManagers();
   }
 
   @override

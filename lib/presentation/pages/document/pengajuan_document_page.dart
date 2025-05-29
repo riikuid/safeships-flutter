@@ -71,7 +71,10 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
             Fluttertoast.showToast(
               msg: 'Berhasil Mengajukan Dokuemntasi Baru, Menunggu Persetujuan',
             );
-            context.read<DashboardProvider>().setIndex(2);
+            // ignore: use_build_context_synchronously
+            context
+                .read<DashboardProvider>()
+                .setIndexByPageName('My Documentations');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
