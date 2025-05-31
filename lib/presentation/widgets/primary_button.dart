@@ -12,6 +12,7 @@ class PrimaryButton extends StatelessWidget {
   final double? height;
   final double? elevation;
   final Color? borderColor;
+  final Color? foregroundColor;
   final bool? reverseLoading;
   final double? radius;
   const PrimaryButton({
@@ -27,6 +28,7 @@ class PrimaryButton extends StatelessWidget {
     this.elevation,
     this.borderColor,
     this.radius,
+    this.foregroundColor,
   });
 
   @override
@@ -57,7 +59,7 @@ class PrimaryButton extends StatelessWidget {
                     ? whiteColor
                     : disabledColor
             : disabledColor,
-        foregroundColor: primaryColor200,
+        foregroundColor: foregroundColor ?? primaryColor200,
         shadowColor: elevation != 0 ? null : transparentColor,
         minimumSize: Size(
           width ?? double.infinity,

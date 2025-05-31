@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -18,8 +19,9 @@ import 'package:path_provider/path_provider.dart';
 // Enum untuk membedakan mode tampilan
 enum DocumentViewMode {
   public, // Dokumen publik (sudah di-approve)
-  managerial, // Untuk approval (super_admin/manager)
-  mySubmission, // Pengajuan pengguna sendiri
+  managerial, // Untuk approval via daftar managerial
+  mySubmissions, // Pengajuan pengguna sendiri
+  approver, // Untuk approver via notifikasi
 }
 
 class DetailDocumentPage extends StatefulWidget {
@@ -67,29 +69,32 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Pilih dokumen dari provider berdasarkan viewMode
-    DocumentModel? selectedDoc;
-    try {
-      if (widget.viewMode == DocumentViewMode.mySubmission) {
-        selectedDoc =
-            context.watch<DocumentProvider>().mySubmissions.firstWhere(
-                  (element) => element.id == widget.doc.id,
-                );
-      } else if (widget.viewMode == DocumentViewMode.managerial) {
-        selectedDoc =
-            context.watch<DocumentProvider>().documentsManagerial.firstWhere(
-                  (element) => element.id == widget.doc.id,
-                );
-      } else {
-        selectedDoc = widget.doc;
-      }
-    } catch (e) {
+    // Pilih dokumen berdasarkan viewMode
+    DocumentModel selectedDoc;
+    final docProvider = context.watch<DocumentProvider>();
+    if (widget.viewMode == DocumentViewMode.mySubmissions) {
+      // Gunakan widget.doc untuk memastikan data terbaru dari showDocument
       selectedDoc = widget.doc;
-      log('Dokumen tidak ditemukan di provider: $e');
+      if (kDebugMode) {
+        log('DetailDocumentPage: Using widget.doc, ID=${selectedDoc.id}, Status=${selectedDoc.status}');
+      }
+    } else if (widget.viewMode == DocumentViewMode.managerial ||
+        widget.viewMode == DocumentViewMode.approver) {
+      try {
+        selectedDoc = docProvider.documentsManagerial.firstWhere(
+          (element) => element.id == widget.doc.id,
+        );
+      } catch (e) {
+        selectedDoc = widget.doc;
+        log('Dokumen tidak ditemukan di documentsManagerial: $e');
+      }
+    } else {
+      selectedDoc = widget.doc;
     }
 
-    // Tentukan apakah pengguna memiliki hak untuk menyetujui/menolak (hanya untuk mode managerial)
-    bool canApproveOrReject = widget.viewMode == DocumentViewMode.managerial &&
+    // Tentukan apakah pengguna memiliki hak untuk menyetujui/menolak
+    bool canApproveOrReject = (widget.viewMode == DocumentViewMode.managerial ||
+            widget.viewMode == DocumentViewMode.approver) &&
         selectedDoc.documentApprovals!.any(
           (approval) =>
               approval.approverId == widget.userId &&
@@ -149,9 +154,11 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return RejectDocumentModal(
-                                  documentId: selectedDoc!.id,
+                                  documentId: selectedDoc.id,
                                   onRejected: () {
-                                    setState(() {});
+                                    setState(() {}); // Refresh UI
+                                    Fluttertoast.showToast(
+                                        msg: 'Document rejected');
                                   },
                                 );
                               },
@@ -177,10 +184,12 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return ApproveDocumentDialog(
-                                  documentId: selectedDoc!.id,
+                                  documentId: selectedDoc.id,
                                   documentTitle: selectedDoc.title,
                                   onApproved: () {
-                                    setState(() {});
+                                    setState(() {}); // Refresh UI
+                                    Fluttertoast.showToast(
+                                        msg: 'Document approved');
                                   },
                                 );
                               },
@@ -288,7 +297,7 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                       GestureDetector(
                         onTap: () {
                           downloadAndOpenFile(
-                              '${ApiEndpoint.baseUrl}/storage/${selectedDoc!.filePath}');
+                              '${ApiEndpoint.baseUrl}/storage/${selectedDoc.filePath}');
                         },
                         child: Container(
                           width: double.infinity,

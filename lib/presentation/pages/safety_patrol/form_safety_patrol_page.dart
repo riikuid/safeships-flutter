@@ -70,7 +70,7 @@ class _FormSafetyPatrolPageState extends State<FormSafetyPatrolPage> {
       Fluttertoast.showToast(msg: 'Deskripsi tidak boleh kosong!');
     } else if (widget.mode == FormMode.pengajuan &&
         _selectedManagerId == null) {
-      Fluttertoast.showToast(msg: 'Manajer tidak boleh kosong!');
+      Fluttertoast.showToast(msg: 'Manajemen tidak boleh kosong!');
     } else if (widget.mode == FormMode.feedback && widget.patrolId == null) {
       Fluttertoast.showToast(msg: 'Patrol ID tidak valid!');
     } else {
@@ -425,7 +425,7 @@ class _FormSafetyPatrolPageState extends State<FormSafetyPatrolPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Manajer',
+                              'Manajemen',
                               style: primaryTextStyle.copyWith(
                                 color: blackColor,
                                 fontSize: 12,
@@ -472,7 +472,7 @@ class _FormSafetyPatrolPageState extends State<FormSafetyPatrolPage> {
                                       horizontal: 15,
                                       vertical: 12,
                                     ),
-                                    hintText: 'Cari nama manajer',
+                                    hintText: 'Cari nama manajemen',
                                     hintStyle: primaryTextStyle.copyWith(
                                       color: blackColor.withOpacity(0.5),
                                       fontSize: 12,
@@ -528,7 +528,7 @@ class _FormSafetyPatrolPageState extends State<FormSafetyPatrolPage> {
                                     horizontal: 15,
                                     vertical: 12,
                                   ),
-                                  hintText: 'Pilih Manajer',
+                                  hintText: 'Pilih Manajemen',
                                   hintStyle: primaryTextStyle.copyWith(
                                     color: blackColor.withOpacity(0.5),
                                     fontSize: 12,

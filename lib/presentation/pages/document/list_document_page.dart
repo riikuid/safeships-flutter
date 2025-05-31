@@ -286,7 +286,7 @@ class _ListDocumentPageState extends State<ListDocumentPage> {
                                         _isLoading = true;
                                       });
                                       DocumentModel selectedDoc =
-                                          await documentProvider.showDocuments(
+                                          await documentProvider.showDocument(
                                         documentId: docId,
                                         errorCallback: (p0) {
                                           Fluttertoast.showToast(

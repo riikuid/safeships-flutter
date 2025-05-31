@@ -183,7 +183,9 @@ class CategoryWithDocsCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => PengajuanDocumentPage(
-                    parentModel: category,
+                    categoryId: category.id,
+                    categoryName: category.name,
+                    categoryCode: category.code,
                   ),
                 ),
               );

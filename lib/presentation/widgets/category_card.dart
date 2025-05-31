@@ -31,7 +31,7 @@ class CategoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              category.name,
+              '${category.name}',
               style: primaryTextStyle.copyWith(
                 fontSize: 16,
                 color: subtitleTextColor,
@@ -71,7 +71,7 @@ class CategoryCard extends StatelessWidget {
                           ));
                     },
                     title: Text(
-                      category.children![index].name,
+                      '${category.children![index].code} ${category.children![index].name}',
                       style: primaryTextStyle.copyWith(
                         fontSize: 12,
                         fontWeight: semibold,

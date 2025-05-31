@@ -15,7 +15,7 @@ class DocumentationSubmissionCard extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) => DetailDocumentPage(
-            viewMode: DocumentViewMode.mySubmission,
+            viewMode: DocumentViewMode.mySubmissions,
             userId: 0, // Not used in view-only mode
             doc: doc,
           ),

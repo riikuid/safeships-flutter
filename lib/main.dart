@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,6 +13,7 @@ import 'package:safeships_flutter/presentation/pages/auth_wrapper.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
+import 'package:safeships_flutter/providers/notification_provider.dart';
 import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 import 'package:safeships_flutter/providers/user_provider.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -145,7 +147,7 @@ void main() async {
 
     // Atur handler untuk notifikasi yang diklik
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Notification clicked: ${message.toMap()}');
+      log('Notification clicked: ${message.toMap()}');
       // Tambahkan navigasi jika perlu
     });
 
@@ -176,6 +178,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => DocumentProvider()),
         ChangeNotifierProvider(create: (context) => DashboardProvider(context)),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProvider(create: (context) => SafetyPatrolProvider()),
       ],
       child: MaterialApp(

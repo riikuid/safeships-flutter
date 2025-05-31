@@ -5,20 +5,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:safeships_flutter/models/category_with_doc_model.dart';
 import 'package:safeships_flutter/models/manager_model.dart';
-import 'package:safeships_flutter/models/user_model.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
 import 'package:safeships_flutter/presentation/widgets/custom_text_field.dart';
 import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
-import 'package:safeships_flutter/providers/user_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class PengajuanDocumentPage extends StatefulWidget {
-  final CategoryWithDocModel parentModel;
-  const PengajuanDocumentPage({super.key, required this.parentModel});
+  final int categoryId;
+  final String categoryName;
+  final String categoryCode;
+  const PengajuanDocumentPage(
+      {super.key,
+      required this.categoryId,
+      required this.categoryName,
+      required this.categoryCode});
 
   @override
   State<PengajuanDocumentPage> createState() => _PengajuanDocumentPageState();
@@ -50,13 +53,13 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
     } else if (_descriptionControler.text.isEmpty) {
       Fluttertoast.showToast(msg: 'Deskripsi tidak boleh kosong!');
     } else if (_selectedManagerId == null) {
-      Fluttertoast.showToast(msg: 'Manajer tidak boleh kosong!');
+      Fluttertoast.showToast(msg: 'Manajemen tidak boleh kosong!');
     } else {
       log("DOC PATH ${selectedFile!.path}");
       await context
           .read<DocumentProvider>()
           .ajukanDokumentasiBaru(
-            categoryId: widget.parentModel.id.toString(),
+            categoryId: widget.categoryId.toString(),
             managerId: _selectedManagerId.toString(),
             title: _titleController.text,
             description: _descriptionControler.text,
@@ -74,7 +77,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
             // ignore: use_build_context_synchronously
             context
                 .read<DashboardProvider>()
-                .setIndexByPageName('My Documentations');
+                .setIndexByPageName('My Documentation');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -276,7 +279,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                   color: primaryColor400,
                                 ),
                                 child: Text(
-                                  widget.parentModel.code,
+                                  widget.categoryCode,
                                   style: primaryTextStyle.copyWith(
                                     fontSize: 10,
                                     color: whiteColor,
@@ -291,7 +294,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                             height: 8,
                           ),
                           Text(
-                            widget.parentModel.name,
+                            widget.categoryName,
                             style: primaryTextStyle.copyWith(
                               color: subtitleTextColor,
                             ),
@@ -369,7 +372,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Manajer',
+                            'Manajemen',
                             style: primaryTextStyle.copyWith(
                               color: blackColor,
                               fontSize: 12,
@@ -421,7 +424,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                     horizontal: 15,
                                     vertical: 12,
                                   ),
-                                  hintText: 'Cari nama manajer',
+                                  hintText: 'Cari nama manajemen',
                                   hintStyle: primaryTextStyle.copyWith(
                                     color: blackColor.withOpacity(0.5),
                                     fontSize: 12,
@@ -477,7 +480,7 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
                                   horizontal: 15,
                                   vertical: 12,
                                 ),
-                                hintText: 'Pilih Manajer',
+                                hintText: 'Pilih Manajemen',
                                 hintStyle: primaryTextStyle.copyWith(
                                   color: blackColor.withOpacity(0.5),
                                   fontSize: 12,

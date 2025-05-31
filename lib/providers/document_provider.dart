@@ -100,7 +100,7 @@ class DocumentProvider with ChangeNotifier {
     }
   }
 
-  Future<DocumentModel> showDocuments({
+  Future<DocumentModel> showDocument({
     required int documentId,
     void Function(dynamic)? errorCallback,
   }) async {
@@ -110,9 +110,30 @@ class DocumentProvider with ChangeNotifier {
         token: (await tokenRepository.getToken())!,
       );
 
+      // Tambahkan atau perbarui dokumen di _documentsManagerial
+      final existingIndex =
+          _documentsManagerial.indexWhere((doc) => doc.id == result.id);
+      if (existingIndex != -1) {
+        _documentsManagerial[existingIndex] = result;
+      } else {
+        _documentsManagerial.add(result);
+      }
+
+      // Tambahkan atau perbarui dokumen di _mySubmissions jika milik pengguna
+      final existingSubmissionIndex =
+          _mySubmissions.indexWhere((doc) => doc.id == result.id);
+      if (existingSubmissionIndex != -1) {
+        _mySubmissions[existingSubmissionIndex] = result;
+      }
+
+      if (kDebugMode) {
+        log('showDocument: ID=${result.id}, Status=${result.status}');
+      }
+
+      notifyListeners();
       return result;
     } catch (error) {
-      if (kDebugMode) log(error.toString());
+      if (kDebugMode) log('showDocument error: $error');
       errorCallback?.call(error);
       rethrow;
     }
@@ -137,6 +158,9 @@ class DocumentProvider with ChangeNotifier {
         pathFile: pathFile,
       );
 
+      // Refresh mySubmissions setelah pengajuan baru
+      await getMySubmissions(errorCallback: (e) => errorCallback?.call(e));
+
       notifyListeners();
 
       return result;
@@ -159,19 +183,30 @@ class DocumentProvider with ChangeNotifier {
         documentId: documentId,
       );
 
-      _documentsManagerial = _documentsManagerial.map((doc) {
-        if (doc.id == result.id) {
-          return result;
-        } else {
-          return doc;
-        }
-      }).toList();
+      // Perbarui _documentsManagerial
+      final index =
+          _documentsManagerial.indexWhere((doc) => doc.id == result.id);
+      if (index != -1) {
+        _documentsManagerial[index] = result;
+      } else {
+        _documentsManagerial.add(result);
+      }
+
+      // Perbarui _mySubmissions jika dokumen ada di sana
+      final submissionIndex =
+          _mySubmissions.indexWhere((doc) => doc.id == result.id);
+      if (submissionIndex != -1) {
+        _mySubmissions[submissionIndex] = result;
+      }
+
+      if (kDebugMode) {
+        log('approveDocument: ID=$documentId, Status=${result.status}');
+      }
 
       notifyListeners();
-
       return true;
     } catch (error) {
-      if (kDebugMode) log(error.toString());
+      if (kDebugMode) log('approveDocument error: $error');
       errorCallback?.call(error);
       return false;
     }
@@ -189,18 +224,30 @@ class DocumentProvider with ChangeNotifier {
         documentId: documentId,
       );
 
-      _documentsManagerial = _documentsManagerial.map((doc) {
-        if (doc.id == result.id) {
-          return result;
-        } else {
-          return doc;
-        }
-      }).toList();
+      // Perbarui _documentsManagerial
+      final index =
+          _documentsManagerial.indexWhere((doc) => doc.id == result.id);
+      if (index != -1) {
+        _documentsManagerial[index] = result;
+      } else {
+        _documentsManagerial.add(result);
+      }
+
+      // Perbarui _mySubmissions jika dokumen ada di sana
+      final submissionIndex =
+          _mySubmissions.indexWhere((doc) => doc.id == result.id);
+      if (submissionIndex != -1) {
+        _mySubmissions[submissionIndex] = result;
+      }
+
+      if (kDebugMode) {
+        log('rejectDocument: ID=$documentId, Status=${result.status}');
+      }
 
       notifyListeners();
       return true;
     } catch (error) {
-      if (kDebugMode) log(error.toString());
+      if (kDebugMode) log('rejectDocument error: $error');
       errorCallback?.call(error);
       return false;
     }
@@ -231,8 +278,12 @@ class DocumentProvider with ChangeNotifier {
       _mySubmissions = await _documentService.getMySubmissions(
         token: token,
       );
+      if (kDebugMode) {
+        log('getMySubmissions: ${_mySubmissions.map((doc) => 'ID=${doc.id}, Status=${doc.status}').toList()}');
+      }
       notifyListeners();
     } catch (e) {
+      if (kDebugMode) log('getMySubmissions error: $e');
       errorCallback(e.toString());
     }
   }
@@ -267,9 +318,13 @@ class DocumentProvider with ChangeNotifier {
         return category;
       }).toList();
 
-      // Update mySubmissions if document exists there
+      // Update mySubmissions
       _mySubmissions =
           _mySubmissions.where((doc) => doc.id != documentId).toList();
+
+      // Update documentsManagerial
+      _documentsManagerial =
+          _documentsManagerial.where((doc) => doc.id != documentId).toList();
 
       onSuccess?.call();
       notifyListeners();
@@ -299,9 +354,14 @@ class DocumentProvider with ChangeNotifier {
           .where((category) => category.id != categoryId)
           .toList();
 
-      // Update mySubmissions if any documents belong to this category
+      // Update mySubmissions
       _mySubmissions =
           _mySubmissions.where((doc) => doc.categoryId != categoryId).toList();
+
+      // Update documentsManagerial
+      _documentsManagerial = _documentsManagerial
+          .where((doc) => doc.categoryId != categoryId)
+          .toList();
 
       onSuccess?.call();
       notifyListeners();

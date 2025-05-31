@@ -44,7 +44,7 @@ class DashboardProvider with ChangeNotifier {
       const MyDocumentationSubmissionsPage(),
     ],
     [
-      'Safety Patrol',
+      'My Safety Patrol',
       Icon(
         Icons.archive_outlined,
         color: subtitleTextColor,
@@ -143,7 +143,7 @@ class DashboardProvider with ChangeNotifier {
           .where((item) =>
               item[0] == 'Home' ||
               item[0] == 'My Documentation' ||
-              item[0] == 'Safety Patrol')
+              item[0] == 'My Safety Patrol')
           .toList(); // User gets only Home and Mys
     } else {
       _dashboardMenu = []; // Fallback for unknown role

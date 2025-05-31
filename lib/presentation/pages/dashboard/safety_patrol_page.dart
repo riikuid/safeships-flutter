@@ -51,7 +51,7 @@ class _SafetyPatrolPageState extends State<SafetyPatrolPage>
                 fontWeight: regular,
               ),
               tabs: const [
-                Tab(text: 'My Submissions'),
+                Tab(text: 'Submissions'),
                 Tab(text: 'Perlu Tindak Lanjut'),
               ],
             ),
