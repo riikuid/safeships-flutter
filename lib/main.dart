@@ -17,6 +17,7 @@ import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
 import 'package:safeships_flutter/providers/notification_provider.dart';
+import 'package:safeships_flutter/providers/safety_induction_provider.dart';
 import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 import 'package:safeships_flutter/providers/user_provider.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -215,6 +216,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProvider(create: (context) => SafetyPatrolProvider()),
+        ChangeNotifierProvider(create: (context) => SafetyInductionProvider()),
       ],
       child: MaterialApp(
         title: 'SafeSHIPS',

@@ -4,6 +4,7 @@ import 'package:safeships_flutter/presentation/pages/dashboard/approval_page.dar
 import 'package:safeships_flutter/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/home_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/my_documentation_submissions_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/my_safety_induction_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/safety_patrol_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/user_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
@@ -56,6 +57,20 @@ class DashboardProvider with ChangeNotifier {
         size: 16,
       ),
       const SafetyPatrolPage(),
+    ],
+    [
+      'My Safety Induction',
+      Icon(
+        Icons.archive_outlined,
+        color: subtitleTextColor,
+        size: 16,
+      ),
+      Icon(
+        Icons.archive_rounded,
+        color: primaryColor800,
+        size: 16,
+      ),
+      const MySafetyInductionPage(),
     ],
     [
       'Dashboard',
@@ -143,6 +158,7 @@ class DashboardProvider with ChangeNotifier {
           .where((item) =>
               item[0] == 'Home' ||
               item[0] == 'My Documentation' ||
+              item[0] == 'My Safety Induction' ||
               item[0] == 'My Safety Patrol')
           .toList(); // User gets only Home and Mys
     } else {

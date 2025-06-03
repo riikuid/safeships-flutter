@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/app_helper.dart';
 import 'package:safeships_flutter/common/notification_handler.dart';
 import 'package:safeships_flutter/presentation/pages/notification/notification_page.dart';
+import 'package:safeships_flutter/presentation/pages/safety_induction/safety_induction_locations_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:safeships_flutter/presentation/pages/document/list_category_page.dart';
@@ -208,7 +209,13 @@ class _HomePageState extends State<HomePage> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            log('Safety Induction tapped');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SafetyInductionLocationsPage(),
+                              ),
+                            );
                           },
                           child: Column(
                             children: [
