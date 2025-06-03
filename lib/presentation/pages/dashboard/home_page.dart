@@ -1,8 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/common/app_helper.dart';
 import 'package:safeships_flutter/common/notification_handler.dart';
 import 'package:safeships_flutter/presentation/pages/notification/notification_page.dart';
+import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:safeships_flutter/presentation/pages/document/list_category_page.dart';
 import 'package:safeships_flutter/presentation/pages/safety_patrol/pengajuan_safety_patrol_page.dart';
@@ -48,7 +50,53 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(0, 20, 20, 0),
+                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppHelper.formatDateToString(DateTime.now()),
+                        style: primaryTextStyle.copyWith(
+                          fontSize: 10,
+                          color: primaryColor500,
+                          fontWeight: semibold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Selamat Datang, ',
+                            style: primaryTextStyle.copyWith(
+                              fontSize: 16,
+                              fontWeight: regular,
+                            ),
+                          ),
+                          Text(
+                            '${context.watch<AuthProvider>().user.name.split(' ').first}!',
+                            style: primaryTextStyle.copyWith(
+                              fontSize: 16,
+                              fontWeight: semibold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        'Selamat Menyelesaikan Pekerjaanmu',
+                        style: primaryTextStyle.copyWith(
+                          fontSize: 12,
+                          color: subtitleTextColor,
+                          fontWeight: regular,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Container(
                   margin:
@@ -262,8 +310,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           } else if (provider.notifications.isEmpty) {
-                            return const Center(
-                                child: Text('No notifications found'));
+                            return Center(
+                                child: Text(
+                              'Anda tidak memiliki notifikasi',
+                              style: primaryTextStyle.copyWith(
+                                color: subtitleTextColor,
+                                fontSize: 12,
+                              ),
+                            ));
                           } else {
                             final latestNotifications =
                                 provider.notifications.take(5).toList();
@@ -281,9 +335,8 @@ class _HomePageState extends State<HomePage> {
                                   notification: notification,
                                   onTap: () async {
                                     setState(() => _isLoading = true);
-                                    await NotificationHandler
-                                        .handleNotificationTap(
-                                            context, notification);
+                                    await NotificationHandler()
+                                        .handleCardTap(context, notification);
                                     if (mounted) {
                                       setState(() => _isLoading = false);
                                     }

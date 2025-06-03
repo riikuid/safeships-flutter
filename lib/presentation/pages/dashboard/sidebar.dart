@@ -1,42 +1,59 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safeships_flutter/main.dart'; // Impor navigatorKey
 import 'package:safeships_flutter/presentation/pages/auth/login_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
 class Sidebar extends StatelessWidget {
+  const Sidebar({super.key});
+
   @override
   Widget build(BuildContext context) {
     var dashboardProvider = Provider.of<DashboardProvider>(context);
 
-    _handleLogout() async {
-      final dashboardProvider = context.read<DashboardProvider>();
+    Future<void> _handleLogout() async {
       final authProvider = context.read<AuthProvider>();
+      final dashboardProvider = context.read<DashboardProvider>();
 
-      await authProvider.logout(
-        errorCallback: (p0) {},
-      );
+      try {
+        await authProvider.logout(
+          errorCallback: (error) {
+            log('Logout error: $error');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Logout failed: $error')),
+            );
+          },
+        );
+        log('Logout successful, navigating to LoginPage');
 
-      dashboardProvider.resetMenu();
+        // Reset menu
+        dashboardProvider.resetMenu();
 
-      // TUNDA navigasi agar tidak bentrok dengan notifyListeners()
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          Navigator.pushReplacement(
-            context,
+        // Navigasi menggunakan navigatorKey
+        if (navigatorKey.currentState != null) {
+          navigatorKey.currentState!.pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false, // Hapus semua rute sebelumnya
           );
+        } else {
+          log('Error: navigatorKey.currentState is null');
         }
-      });
+      } catch (e) {
+        log('Unexpected logout error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unexpected error: $e')),
+        );
+      }
     }
 
     return Drawer(
       child: Container(
         color: whiteColor,
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Push logout to bottom
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: ListView(
@@ -82,8 +99,7 @@ class Sidebar extends StatelessWidget {
                               : null,
                           onTap: () {
                             dashboardProvider.setIndex(index);
-                            Navigator.pop(
-                                context); // Close sidebar after selection
+                            Navigator.pop(context);
                           },
                         );
                       },
@@ -105,10 +121,9 @@ class Sidebar extends StatelessWidget {
                   fontWeight: semibold,
                 ),
               ),
-              onTap: () {
-                _handleLogout();
-
-                Navigator.pop(context);
+              onTap: () async {
+                Navigator.pop(context); // Tutup drawer
+                await _handleLogout();
               },
             ),
           ],

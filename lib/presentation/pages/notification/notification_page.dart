@@ -38,13 +38,13 @@ class _NotificationPageState extends State<NotificationPage> {
           style: primaryTextStyle.copyWith(
             fontSize: 16,
             fontWeight: semibold,
-            color: blackColor,
+            color: whiteColor,
           ),
         ),
-        backgroundColor: whiteColor,
+        backgroundColor: primaryColor500,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: blackColor),
+          icon: Icon(Icons.arrow_back, color: whiteColor),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -53,7 +53,7 @@ class _NotificationPageState extends State<NotificationPage> {
         builder: (context, provider, child) {
           if (provider.isLoading) {
             return ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               itemCount: 3,
               itemBuilder: (context, index) => Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
@@ -69,11 +69,21 @@ class _NotificationPageState extends State<NotificationPage> {
               ),
             );
           } else if (provider.notifications.isEmpty) {
-            return const Center(child: Text('No notifications found'));
+            return Center(
+                child: Text(
+              'Anda tidak memiliki notifikasi',
+              style: primaryTextStyle.copyWith(
+                color: subtitleTextColor,
+                fontSize: 12,
+              ),
+            ));
           } else {
-            return ListView.builder(
+            return ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               itemCount: provider.notifications.length,
+              separatorBuilder: (context, index) => const SizedBox(
+                height: 10,
+              ),
               itemBuilder: (context, index) {
                 final notification = provider.notifications[index];
                 return NotificationCard(
