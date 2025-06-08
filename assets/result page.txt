@@ -1,0 +1,254 @@
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/dashboard.dart';
+import 'package:safeships_flutter/presentation/pages/safety_induction/safety_induction_certificate_page.dart';
+import 'package:safeships_flutter/presentation/pages/safety_induction/safety_induction_test_page.dart';
+import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
+import 'package:safeships_flutter/providers/safety_induction_provider.dart';
+import 'package:safeships_flutter/theme.dart';
+
+class SafetyInductionResultPage extends StatefulWidget {
+  final int inductionId;
+
+  const SafetyInductionResultPage({super.key, required this.inductionId});
+
+  @override
+  State<SafetyInductionResultPage> createState() =>
+      _SafetyInductionResultPageState();
+}
+
+class _SafetyInductionResultPageState extends State<SafetyInductionResultPage> {
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchResult();
+  }
+
+  Future<void> _fetchResult() async {
+    final provider = context.read<SafetyInductionProvider>();
+    await provider.getResult(
+      inductionId: widget.inductionId,
+      errorCallback: (error) {
+        Fluttertoast.showToast(msg: error.toString());
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Future<void> _handleExit() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Konfirmasi Keluar'),
+        content: Text(
+            'Jika Anda keluar, pengajuan akan ditandai sebagai gagal. Lanjutkan?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _isLoading = true;
+              });
+              context
+                  .read<SafetyInductionProvider>()
+                  .markAsFailed(
+                    inductionId: widget.inductionId,
+                    errorCallback: (error) {
+                      Fluttertoast.showToast(msg: error.toString());
+                    },
+                  )
+                  .then((_) {
+                Navigator.pop(context); // Tutup dialog
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Dashboard(),
+                    )); // Kembali ke home
+                context.read<SafetyInductionProvider>().resetCurrentInduction();
+              }).catchError((error) {
+                Fluttertoast.showToast(msg: error.toString());
+              }).whenComplete(() {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+            },
+            child: Text('Keluar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SafetyInductionProvider>(
+      builder: (context, provider, child) {
+        if (provider.latestAttempt == null) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final attempt = provider.latestAttempt;
+        final passed = attempt?.passed ?? false;
+
+        return Stack(
+          children: [
+            Scaffold(
+              backgroundColor: greyBackgroundColor,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                iconTheme: IconThemeData(color: whiteColor),
+                surfaceTintColor: transparentColor,
+                backgroundColor: primaryColor500,
+                title: Text(
+                  'Hasil Tes Safety Induction',
+                  style: primaryTextStyle.copyWith(
+                    fontSize: 18,
+                    fontWeight: semibold,
+                    color: whiteColor,
+                  ),
+                ),
+              ),
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: whiteColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          passed
+                              ? 'Selamat, Anda Lulus!'
+                              : 'Maaf, Anda Belum Lulus',
+                          style: primaryTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semibold,
+                            color: passed ? Colors.green : redLableColor,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          'Skor: ${attempt?.score ?? 0}',
+                          style: primaryTextStyle.copyWith(fontSize: 16),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Status: ${passed ? 'Lulus' : 'Gagal'}',
+                          style: primaryTextStyle.copyWith(fontSize: 16),
+                        ),
+                        const SizedBox(height: 20),
+                        if (!passed)
+                          PrimaryButton(
+                            color: primaryColor500,
+                            borderColor: primaryColor500,
+                            elevation: 0,
+                            child: Text(
+                              'Kerjakan Ulang',
+                              style: primaryTextStyle.copyWith(
+                                color: whiteColor,
+                                fontWeight: semibold,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SafetyInductionTestPage(
+                                    inductionId: widget.inductionId,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        if (!passed) const SizedBox(height: 15),
+                        if (!passed)
+                          PrimaryButton(
+                            color: redLableColor,
+                            borderColor: redLableColor,
+                            elevation: 0,
+                            child: Text(
+                              'Keluar',
+                              style: primaryTextStyle.copyWith(
+                                color: whiteColor,
+                                fontWeight: semibold,
+                              ),
+                            ),
+                            onPressed: _handleExit,
+                          ),
+                        if (passed)
+                          PrimaryButton(
+                            isLoading: _isLoading,
+                            color: primaryColor500,
+                            borderColor: primaryColor500,
+                            elevation: 0,
+                            child: Text(
+                              'Lihat Sertifikat',
+                              style: primaryTextStyle.copyWith(
+                                color: whiteColor,
+                                fontWeight: semibold,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      SafetyInductionCertificatePage(
+                                          inductionId: widget.inductionId),
+                                ),
+                              );
+                            },
+                          ),
+                        if (passed) const SizedBox(height: 15),
+                        if (passed)
+                          PrimaryButton(
+                            color: greyBackgroundColor,
+                            borderColor: disabledColor,
+                            elevation: 0,
+                            child: Text(
+                              'Kembali ke Beranda',
+                              style: primaryTextStyle.copyWith(
+                                color: blackColor,
+                                fontWeight: semibold,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Dashboard(),
+                                ),
+                              );
+                              provider.resetCurrentInduction();
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (_isLoading)
+              ColoredBox(
+                color: blackColor.withOpacity(0.4),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}

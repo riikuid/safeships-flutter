@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/auth_model.dart';
+import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
@@ -309,18 +310,39 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor500,
+                      backgroundColor: whiteColor,
                       minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(100),
+                        ),
+                        side: BorderSide(
+                          color: primaryColor500,
+                        ),
+                      ),
                     ),
                     onPressed: _isLoading
                         ? null
                         : () => _showEditProfileDialog(context, user),
-                    child: Text(
-                      'Edit Profil',
-                      style: primaryTextStyle.copyWith(
-                        color: whiteColor,
-                        fontWeight: semibold,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          color: primaryColor500,
+                          size: 14,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          'Edit Profil',
+                          style: primaryTextStyle.copyWith(
+                            color: primaryColor500,
+                            fontWeight: semibold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),

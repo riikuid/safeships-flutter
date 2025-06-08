@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Stack(
       children: [
         Scaffold(
@@ -111,100 +112,103 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ListCategoryPage(),
-                              ),
-                            );
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: whiteColor,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(4.0),
-                                  ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x19000000),
-                                      blurRadius: 8,
-                                      offset: Offset(0, 0),
+                      if (authProvider.user.role != 'non_user')
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ListCategoryPage(),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(4.0),
                                     ),
-                                  ],
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color(0x19000000),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.description_outlined,
+                                    size: 26,
+                                    color: Color(0xffD5ABA8),
+                                  ),
                                 ),
-                                child: const Icon(
-                                  Icons.description_outlined,
-                                  size: 26,
-                                  color: Color(0xffD5ABA8),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Dokumentasi K3',
+                                  style: primaryTextStyle.copyWith(
+                                    fontSize: 10,
+                                    fontWeight: semibold,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Dokumentasi K3',
-                                style: primaryTextStyle.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: semibold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const PengajuanSafetyPatrolPage(),
-                              ),
-                            );
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: whiteColor,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(4.0),
-                                  ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x19000000),
-                                      blurRadius: 8,
-                                      offset: Offset(0, 0),
+                      if (authProvider.user.role != 'non_user')
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PengajuanSafetyPatrolPage(),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(4.0),
                                     ),
-                                  ],
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color(0x19000000),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.forward_to_inbox,
+                                    size: 26,
+                                    color: Color(0xffD6BB7F),
+                                  ),
                                 ),
-                                child: const Icon(
-                                  Icons.forward_to_inbox,
-                                  size: 26,
-                                  color: Color(0xffD6BB7F),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Formulir Safety Patrol',
+                                  style: primaryTextStyle.copyWith(
+                                    fontSize: 10,
+                                    fontWeight: semibold,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Formulir Safety Patrol',
-                                style: primaryTextStyle.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: semibold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: InkWell(

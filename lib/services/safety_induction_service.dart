@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:safeships_flutter/common/api.dart';
 import 'package:safeships_flutter/models/safety_induction/certificate_model.dart';
+import 'package:safeships_flutter/models/safety_induction/induction_card_model.dart';
 import 'package:safeships_flutter/models/safety_induction/location_model.dart';
 import 'package:safeships_flutter/models/safety_induction/question_model.dart';
 import 'package:safeships_flutter/models/safety_induction/question_package_model.dart';
@@ -131,7 +132,7 @@ class SafetyInductionService {
     }
   }
 
-  Future<Map<String, dynamic>> getResult({
+  Future<SafetyInductionModel> getResult({
     required String token,
     required int inductionId,
   }) async {
@@ -144,15 +145,7 @@ class SafetyInductionService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
-      return {
-        'induction': SafetyInductionModel.fromJson(data['induction']),
-        'attempts': (data['attempts'] as List)
-            .map((item) => SafetyInductionAttemptModel.fromJson(item))
-            .toList(),
-        'certificate': data['certificate'] != null
-            ? CertificateModel.fromJson(data['certificate'])
-            : null,
-      };
+      return SafetyInductionModel.fromJson(data);
     } else {
       throw jsonDecode(response.body)['message'] ?? 'Failed to fetch result';
     }
@@ -215,6 +208,87 @@ class SafetyInductionService {
     } else {
       throw jsonDecode(response.body)['message'] ??
           'Failed to mark induction as failed';
+    }
+  }
+
+  Future<List<InductionCardModel>> getAll({
+    required String token,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/safety-inductions';
+
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/safety-inductions/managerial response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body)['data'];
+      return data.map((item) => InductionCardModel.fromJson(item)).toList();
+    } else {
+      throw jsonDecode(response.body)['message'] ??
+          'Gagal mengambil laporan manajerial';
+    }
+  }
+
+  Future<SafetyInductionModel> showInduction({
+    required String token,
+    required int inductionId,
+  }) async {
+    var url =
+        '${ApiEndpoint.baseUrl}/api/safety-inductions/$inductionId/detail';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/safety-inductions/$inductionId/detail response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return SafetyInductionModel.fromJson(data);
+    } else {
+      throw jsonDecode(response.body)['message'] ??
+          'Gagal mengambil safety patrol';
+    }
+  }
+
+  Future<Map<String, dynamic>> getReportData({
+    required String token,
+    int? year,
+  }) async {
+    var url = '${ApiEndpoint.baseUrl}/api/safety-inductions/report-data';
+    if (year != null) {
+      url += '?year=$year';
+    }
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    log('GET /api/safety-inductions/report-data response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return data;
+    } else {
+      throw jsonDecode(response.body)['message'] ??
+          'Gagal mengambil data laporan';
     }
   }
 }

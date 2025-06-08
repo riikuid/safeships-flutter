@@ -41,6 +41,34 @@ class AuthService {
     }
   }
 
+  Future<AuthModel> guestLogin({
+    required String fcmToken,
+  }) async {
+    tokenRepository.clearToken();
+    var url = '${ApiEndpoint.baseUrl}/api/guest-login';
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var body = jsonEncode({
+      'fcm_token': fcmToken,
+    });
+    log('service body $body');
+
+    final response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+
+    log(response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      AuthModel user = AuthModel.fromJson(data['user']);
+      tokenRepository.putToken(data['token']);
+      return user;
+    } else {
+      throw jsonDecode(response.body)['message'];
+    }
+  }
+
   Future<bool> logout() async {
     var url = '${ApiEndpoint.baseUrl}/api/logout';
 

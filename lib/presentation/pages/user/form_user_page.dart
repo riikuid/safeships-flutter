@@ -236,7 +236,7 @@ class _FormUserPageState extends State<FormUserPage> {
                       ),
                     ),
                     value: _selectedRole,
-                    items: ['manager', 'user']
+                    items: ['admin', 'manager', 'user']
                         .map((role) => DropdownMenuItem(
                               value: role,
                               child: Text(

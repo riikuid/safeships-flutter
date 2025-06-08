@@ -116,7 +116,8 @@ class _SafetyInductionDetailPageState extends State<SafetyInductionDetailPage> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       SafetyInductionCertificatePage(
-                                          inductionId: submission.id),
+                                    inductionId: submission.id,
+                                  ),
                                 ),
                               );
                             } else {

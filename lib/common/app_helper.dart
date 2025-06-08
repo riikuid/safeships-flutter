@@ -59,9 +59,9 @@ class AppHelper {
     status = status.toLowerCase(); // Case-insensitive comparison
 
     switch (status) {
-      case 'approved':
+      case 'approved' || 'completed':
         return greenLableColor;
-      case 'rejected':
+      case 'rejected' || 'failed':
         return redLableColor;
       case 'deleted':
         return redLableColor;

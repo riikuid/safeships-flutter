@@ -150,9 +150,19 @@ class DashboardProvider with ChangeNotifier {
       _dashboardMenu = _allMenuItems; // Super Admin gets all menu items
     } else if (role == 'manager') {
       _dashboardMenu = _allMenuItems
-          .where(
-              (item) => item[0] != 'User Management' && item[0] != 'Dashboard')
+          .where((item) => item[0] != 'User Management')
           .toList(); // Manager gets all except User Management
+    } else if (role == 'admin') {
+      _dashboardMenu = _allMenuItems
+          .where(
+            (item) =>
+                item[0] == 'Home' ||
+                item[0] == 'My Documentation' ||
+                item[0] == 'My Safety Induction' ||
+                item[0] == 'My Safety Patrol' ||
+                item[0] == 'Dashboard',
+          )
+          .toList(); // User gets only Home and Mys
     } else if (role == 'user') {
       _dashboardMenu = _allMenuItems
           .where((item) =>
@@ -160,6 +170,11 @@ class DashboardProvider with ChangeNotifier {
               item[0] == 'My Documentation' ||
               item[0] == 'My Safety Induction' ||
               item[0] == 'My Safety Patrol')
+          .toList(); // User gets only Home and Mys
+    } else if (role == 'non_user') {
+      _dashboardMenu = _allMenuItems
+          .where(
+              (item) => item[0] == 'Home' || item[0] == 'My Safety Induction')
           .toList(); // User gets only Home and Mys
     } else {
       _dashboardMenu = []; // Fallback for unknown role

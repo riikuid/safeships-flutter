@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/profile_page.dart';
 import 'package:safeships_flutter/presentation/pages/dashboard/sidebar.dart';
+import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 
@@ -16,6 +17,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     MediaQueryData device = MediaQuery.of(context);
+
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: greyBackgroundColor,
       appBar: AppBar(
@@ -66,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                   ],
                 ),
-                if (pageTitle == 'Home')
+                if (pageTitle == 'Home' && authProvider.user.role != 'non_user')
                   IconButton(
                     onPressed: () {
                       Navigator.push(

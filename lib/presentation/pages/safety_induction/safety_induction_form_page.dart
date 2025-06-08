@@ -46,6 +46,27 @@ class _SafetyInductionFormPageState extends State<SafetyInductionFormPage> {
       });
       return;
     }
+    if (_addressController.text.isEmpty) {
+      Fluttertoast.showToast(msg: 'Alamat tidak boleh kosong!');
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+    if (_phoneController.text.isEmpty) {
+      Fluttertoast.showToast(msg: 'Nomor HP tidak boleh kosong!');
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+    if (_emailController.text.isEmpty) {
+      Fluttertoast.showToast(msg: 'Email tidak boleh kosong!');
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     if (_selectedType == null) {
       Fluttertoast.showToast(msg: 'Tipe tidak boleh kosong!');
       setState(() {
@@ -274,7 +295,7 @@ class _SafetyInductionFormPageState extends State<SafetyInductionFormPage> {
                     const SizedBox(height: 15),
                     CustomTextField(
                       keyboardType: TextInputType.streetAddress,
-                      labelText: 'Alamat (Opsional)',
+                      labelText: 'Alamat',
                       hintText: 'Masukkan alamat',
                       controller: _addressController,
                       textFieldType: CustomTextFieldType.outline,
@@ -283,7 +304,7 @@ class _SafetyInductionFormPageState extends State<SafetyInductionFormPage> {
                     ),
                     const SizedBox(height: 15),
                     CustomTextField(
-                      labelText: 'Nomor HP (Opsional)',
+                      labelText: 'Nomor HP',
                       hintText: 'Masukkan nomor HP',
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
@@ -292,7 +313,7 @@ class _SafetyInductionFormPageState extends State<SafetyInductionFormPage> {
                     ),
                     const SizedBox(height: 15),
                     CustomTextField(
-                      labelText: 'Email (Opsional)',
+                      labelText: 'Email',
                       hintText: 'Masukkan email',
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,

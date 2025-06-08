@@ -36,6 +36,29 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> guestLogin({
+    required String fcmToken,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      log('masuk');
+      AuthModel data = await AuthService().guestLogin(
+        fcmToken: fcmToken,
+      );
+
+      _user = data;
+      notifyListeners();
+
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
   Future<bool> logout({
     void Function(dynamic)? errorCallback,
   }) async {

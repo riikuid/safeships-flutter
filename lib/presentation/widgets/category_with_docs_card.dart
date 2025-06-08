@@ -214,27 +214,27 @@ class CategoryWithDocsCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (context.read<AuthProvider>().user.role == 'super_admin')
-              PopupMenuItem(
-                value: 'hapus',
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.delete,
-                      color: Color(0xfff94449),
-                      size: 14,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Hapus Semua Dokumentasi',
-                      style: primaryTextStyle.copyWith(
-                        fontSize: 12,
-                        color: Color(0xfff94449),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // if (context.read<AuthProvider>().user.role == 'super_admin')
+            //   PopupMenuItem(
+            //     value: 'hapus',
+            //     child: Row(
+            //       children: [
+            //         const Icon(
+            //           Icons.delete,
+            //           color: Color(0xfff94449),
+            //           size: 14,
+            //         ),
+            //         const SizedBox(width: 4),
+            //         Text(
+            //           'Hapus Semua Dokumentasi',
+            //           style: primaryTextStyle.copyWith(
+            //             fontSize: 12,
+            //             color: Color(0xfff94449),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
           ],
         ),
       ],

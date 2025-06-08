@@ -8,10 +8,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/list_safety_induction_page.dart';
 import 'package:safeships_flutter/presentation/widgets/gauge_progress_chart.dart';
+import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
+import 'package:safeships_flutter/presentation/widgets/safety_induction_bar_chart.dart';
 import 'package:safeships_flutter/presentation/widgets/safety_patrol_bar_chart.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
+import 'package:safeships_flutter/providers/safety_induction_provider.dart';
 import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 import 'package:safeships_flutter/services/document_service.dart';
 import 'package:safeships_flutter/theme.dart';
@@ -25,7 +29,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  String? _selectedYear = 'All'; // Default ke 'All'
+  String? _selectedYearPatrol = 'All'; // Default ke 'All'
+  String? _selectedYearInduction = 'All'; // Default ke 'All'
 
   bool _isLoading = false;
   String? _error = 'Terjadi Kesalahan, Ulangi Lagi Setelah Beberapa Waktu';
@@ -164,13 +169,14 @@ class _DashboardPageState extends State<DashboardPage> {
     );
 
     // Ambil data laporan safety patrol dengan tahun dari dropdown
-    await _fetchReportData();
+    await _fetchReportDataPatrol();
+    await _fetchReportDataInduction();
   }
 
-  Future<void> _fetchReportData() async {
+  Future<void> _fetchReportDataPatrol() async {
     int? year;
-    if (_selectedYear != 'All') {
-      year = int.tryParse(_selectedYear!);
+    if (_selectedYearPatrol != 'All') {
+      year = int.tryParse(_selectedYearPatrol!);
     }
 
     await context.read<SafetyPatrolProvider>().fetchReportData(
@@ -181,10 +187,25 @@ class _DashboardPageState extends State<DashboardPage> {
         );
   }
 
+  Future<void> _fetchReportDataInduction() async {
+    int? year;
+    if (_selectedYearInduction != 'All') {
+      year = int.tryParse(_selectedYearInduction!);
+    }
+
+    await context.read<SafetyInductionProvider>().fetchReportData(
+          year: year,
+          errorCallback: (error) {
+            Fluttertoast.showToast(msg: 'Error fetching report induc: $error');
+          },
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final documentProvider = context.watch<DocumentProvider>();
     final safetyPatrolProvider = context.watch<SafetyPatrolProvider>();
+    final safetyInductionProvider = context.watch<SafetyInductionProvider>();
 
     return Stack(
       children: [
@@ -372,7 +393,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       color: primaryColor500, width: 2),
                                 ),
                               ),
-                              value: _selectedYear,
+                              value: _selectedYearPatrol,
                               items: [
                                 'All',
                                 ...List.generate(2040 - 2020 + 1,
@@ -389,9 +410,9 @@ class _DashboardPageState extends State<DashboardPage> {
                               }).toList(),
                               onChanged: (value) {
                                 setState(() {
-                                  _selectedYear = value;
+                                  _selectedYearPatrol = value;
                                   // Panggil fetchReportData dengan tahun yang dipilih
-                                  _fetchReportData();
+                                  _fetchReportDataPatrol();
                                 });
                               },
                             ),
@@ -447,6 +468,147 @@ class _DashboardPageState extends State<DashboardPage> {
                               'Unsafe Action', const Color(0xff36A2EB)),
                         ],
                       ),
+                    ],
+                  ),
+                ),
+                // Bar Chart untuk Laporan Safety Inductions
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: whiteColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Rekap Safety Induction',
+                              style: primaryTextStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 100,
+                            height: 40,
+                            child: DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: whiteColor,
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 12),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: disabledColor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: primaryColor500, width: 2),
+                                ),
+                              ),
+                              value: _selectedYearInduction,
+                              items: [
+                                'All',
+                                ...List.generate(2040 - 2020 + 1,
+                                    (index) => (2020 + index).toString())
+                              ].map((year) {
+                                return DropdownMenuItem<String>(
+                                  value: year,
+                                  child: Text(
+                                    year,
+                                    style:
+                                        primaryTextStyle.copyWith(fontSize: 14),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedYearInduction = value;
+                                  // Panggil fetchReportData dengan tahun yang dipilih
+                                  _fetchReportDataInduction();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      if (safetyInductionProvider.isReportLoading)
+                        Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                            height: 200,
+                            margin: const EdgeInsets.only(bottom: 10),
+                          ),
+                        )
+                      else if (safetyInductionProvider.reportError != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'Error: ${safetyInductionProvider.reportError}',
+                            style: primaryTextStyle.copyWith(color: Colors.red),
+                          ),
+                        )
+                      else if (safetyInductionProvider
+                          .reportData['labels'].isNotEmpty)
+                        SafetyInductionBarChart(
+                          reportData: safetyInductionProvider.reportData,
+                        )
+                      else
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          child: Text(
+                            '-',
+                            style: primaryTextStyle,
+                          ),
+                        ),
+                      const SizedBox(height: 10),
+                      PrimaryButton(
+                        color: whiteColor,
+                        borderColor: const Color(0xff4BC0C0),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ListSafetyInductionPage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'List Safety Induction',
+                          style: primaryTextStyle.copyWith(
+                            color: const Color(0xff4BC0C0),
+                            fontWeight: semibold,
+                          ),
+                        ),
+                      )
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     _buildLegend(
+                      //         'Unsafe Condition', const Color(0xffFF6384)),
+                      //     const SizedBox(width: 20),
+                      //     _buildLegend(
+                      //         'Unsafe Action', const Color(0xff36A2EB)),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),

@@ -91,7 +91,7 @@ class _SafetyInductionCertificatePageState
                 surfaceTintColor: transparentColor,
                 backgroundColor: primaryColor500,
                 title: Text(
-                  'Sertifikat Safety Induction',
+                  'Detail Safety Induction',
                   style: primaryTextStyle.copyWith(
                     fontSize: 18,
                     fontWeight: semibold,
@@ -112,7 +112,7 @@ class _SafetyInductionCertificatePageState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sertifikat',
+                          'certi',
                           style: primaryTextStyle.copyWith(
                             fontSize: 18,
                             fontWeight: semibold,

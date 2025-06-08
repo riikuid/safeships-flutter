@@ -121,8 +121,13 @@ class _UserPageState extends State<UserPage> {
           break;
         case 'super_admin':
           icon = Icons.admin_panel_settings_rounded;
-          backgroundColor = redLableColor;
+          backgroundColor = blackColor;
           label = 'SUPER ADMIN';
+          break;
+        case 'admin':
+          icon = Icons.supervised_user_circle;
+          backgroundColor = redLableColor;
+          label = 'ADMIN';
           break;
         case 'user':
           icon = Icons.person_rounded;

@@ -72,8 +72,10 @@ class _SafetyInductionTestPageState extends State<SafetyInductionTestPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                SafetyInductionResultPage(inductionId: widget.inductionId),
+            builder: (context) => SafetyInductionResultPage(
+              inductionId: widget.inductionId,
+              isAfterTest: true,
+            ),
           ),
         );
       }

@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safeships_flutter/models/notification_model.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/detail_induction_page.dart';
+import 'package:safeships_flutter/presentation/pages/dashboard/list_safety_induction_page.dart';
 import 'package:safeships_flutter/presentation/pages/document/detail_document_page.dart';
 import 'package:safeships_flutter/presentation/pages/document/pengajuan_document_page.dart';
 import 'package:safeships_flutter/presentation/pages/safety_patrol/detail_safety_patrol_page.dart';
 import 'package:safeships_flutter/providers/auth_provider.dart';
+import 'package:safeships_flutter/providers/dashboard_provider.dart';
 import 'package:safeships_flutter/providers/document_provider.dart';
+import 'package:safeships_flutter/providers/safety_induction_provider.dart';
 import 'package:safeships_flutter/providers/safety_patrol_provider.dart';
 
 class NotificationHandler {
@@ -19,6 +23,8 @@ class NotificationHandler {
     final docProvider = Provider.of<DocumentProvider>(context, listen: false);
     final patrolProvider =
         Provider.of<SafetyPatrolProvider>(context, listen: false);
+    final inductionProvider =
+        Provider.of<SafetyInductionProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     bool isLoading = false;
@@ -36,6 +42,7 @@ class NotificationHandler {
         docProvider: docProvider,
         patrolProvider: patrolProvider,
         authProvider: authProvider,
+        inductionProvider: inductionProvider,
       );
     } catch (e) {
       log('Card tap error: $e');
@@ -54,6 +61,8 @@ class NotificationHandler {
     final patrolProvider =
         Provider.of<SafetyPatrolProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final inductionProvider =
+        Provider.of<SafetyInductionProvider>(context, listen: false);
 
     bool isLoading = false;
     void setLoading(bool value) {
@@ -86,6 +95,7 @@ class NotificationHandler {
         referenceType: referenceType,
         docProvider: docProvider,
         patrolProvider: patrolProvider,
+        inductionProvider: inductionProvider,
         authProvider: authProvider,
       );
     } catch (e) {
@@ -103,6 +113,7 @@ class NotificationHandler {
     required String referenceType,
     required DocumentProvider docProvider,
     required SafetyPatrolProvider patrolProvider,
+    required SafetyInductionProvider inductionProvider,
     required AuthProvider authProvider,
   }) async {
     try {
@@ -172,7 +183,29 @@ class NotificationHandler {
 
         case 'safety_induction_view':
           // Kosong untuk saat ini
-          Fluttertoast.showToast(msg: 'Safety induction view not implemented');
+          final induction = await inductionProvider.showInduction(
+            inductionId: referenceId,
+            errorCallback: (error) {
+              Fluttertoast.showToast(msg: error.toString());
+            },
+          );
+          if (context.mounted) {
+            context.read<DashboardProvider>().setIndexByPageName('Dashboard');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ListSafetyInductionPage(),
+              ),
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailInductionPage(
+                  induction: induction,
+                ),
+              ),
+            );
+          }
           break;
 
         case 'safety_patrol_view':

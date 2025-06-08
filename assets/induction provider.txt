@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:safeships_flutter/common/token_repository.dart';
 import 'package:safeships_flutter/models/safety_induction/certificate_model.dart';
-import 'package:safeships_flutter/models/safety_induction/induction_card_model.dart';
 import 'package:safeships_flutter/models/safety_induction/location_model.dart';
 import 'package:safeships_flutter/models/safety_induction/question_model.dart';
 import 'package:safeships_flutter/models/safety_induction/question_package_model.dart';
@@ -35,20 +34,6 @@ class SafetyInductionProvider with ChangeNotifier {
   CertificateModel? _certificate;
   CertificateModel? get certificate => _certificate;
 
-  List<InductionCardModel> _inductions = [];
-  List<InductionCardModel> get inductions => _inductions;
-
-  // Data untuk chart laporan
-  Map<String, dynamic> _reportData = {'labels': [], 'datasets': []};
-  Map<String, dynamic> get reportData => _reportData;
-
-  // Status loading dan error untuk chart
-  bool _isReportLoading = false;
-  bool get isReportLoading => _isReportLoading;
-
-  String? _reportError;
-  String? get reportError => _reportError;
-
   // bool _isLoading = false;
   // bool get isLoading => _isLoading;
 
@@ -60,41 +45,6 @@ class SafetyInductionProvider with ChangeNotifier {
 
   List<String> _pendingOptions = [];
   List<String> get pendingOptions => _pendingOptions;
-
-  Future<void> getAll({
-    void Function(dynamic)? errorCallback,
-    String? status,
-  }) async {
-    try {
-      List<InductionCardModel> result = await _service.getAll(
-        token: (await tokenRepository.getToken())!,
-      );
-
-      _inductions = result;
-      notifyListeners();
-    } catch (error) {
-      if (kDebugMode) log('Error fetching induction: $error');
-      errorCallback?.call(error);
-    }
-  }
-
-  Future<SafetyInductionModel> showInduction({
-    required int inductionId,
-    void Function(dynamic)? errorCallback,
-  }) async {
-    try {
-      SafetyInductionModel result = await _service.showInduction(
-        token: (await tokenRepository.getToken())!,
-        inductionId: inductionId,
-      );
-
-      return result;
-    } catch (error) {
-      if (kDebugMode) log('Error show induction: $error');
-      errorCallback?.call(error);
-      rethrow;
-    }
-  }
 
   Future<void> getLocations({void Function(dynamic)? errorCallback}) async {
     try {
@@ -288,10 +238,11 @@ class SafetyInductionProvider with ChangeNotifier {
 
       final result =
           await _service.getResult(token: token, inductionId: inductionId);
-
-      _currentInduction = result;
-      _latestAttempt = (result.attempts!).lastOrNull;
-      _certificate = result.certificate;
+      if (_currentInduction?.id == inductionId) {
+        _currentInduction = result;
+        _latestAttempt = (result.attempts!).lastOrNull;
+        _certificate = result.certificate;
+      }
 
       // _isLoading = false;
       notifyListeners();
@@ -410,33 +361,6 @@ class SafetyInductionProvider with ChangeNotifier {
       errorCallback?.call(e);
       notifyListeners();
       rethrow;
-    }
-  }
-
-  Future<void> fetchReportData({
-    int? year,
-    required Function(String) errorCallback,
-  }) async {
-    try {
-      _isReportLoading = true;
-      _reportError = null;
-      notifyListeners();
-
-      final token = await tokenRepository.getToken();
-      if (token == null) throw 'Tidak ada token';
-
-      _reportData = await _service.getReportData(
-        token: token,
-        year: year,
-      );
-
-      _isReportLoading = false;
-      notifyListeners();
-    } catch (e) {
-      _isReportLoading = false;
-      _reportError = e.toString();
-      notifyListeners();
-      errorCallback(e.toString());
     }
   }
 
