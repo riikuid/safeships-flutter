@@ -8,6 +8,7 @@ import 'package:safeships_flutter/presentation/widgets/primary_button.dart';
 import 'package:safeships_flutter/providers/safety_induction_provider.dart';
 import 'package:safeships_flutter/theme.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SafetyInductionLocationsPage extends StatefulWidget {
   const SafetyInductionLocationsPage({super.key});
@@ -50,18 +51,22 @@ class _SafetyInductionLocationsPageState
     }
   }
 
-  // Future<void> _launchYouTube(String url) async {
-  //   final uri = Uri.parse(url);
-  //   if (await canLaunchUrl(uri)) {
-  //     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  //   } else {
-  //     Fluttertoast.showToast(msg: 'Gagal membuka link YouTube');
-  //   }
-  // }
-
-  String _getYouTubeThumbnail(String url) {
-    final videoId = url.split('v=')[1].split('&')[0];
-    return 'https://img.youtube.com/vi/$videoId/0.jpg';
+  Future<void> _launchYouTube(String url) async {
+    setState(() {
+      _isLoading = true;
+    });
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      Fluttertoast.showToast(msg: 'Gagal membuka link YouTube');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -129,7 +134,7 @@ class _SafetyInductionLocationsPageState
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                    crossAxisCount: 1,
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                     childAspectRatio: 16 / 9,
@@ -161,76 +166,74 @@ class _SafetyInductionLocationsPageState
                   ),
                 );
               } else {
-                return GridView.builder(
+                return ListView.builder(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    childAspectRatio: 16 / 9,
-                  ),
+                  // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  //   crossAxisCount: 1,
+                  //   crossAxisSpacing: 15,
+                  //   mainAxisSpacing: 15,
+                  //   childAspectRatio: 16 / 9,
+                  // ),
                   itemCount: provider.locations.length,
                   itemBuilder: (context, index) {
                     final location = provider.locations[index];
                     return GestureDetector(
-                      // onTap: () => _launchYouTube(location.youtubeUrl),
-                      // onTap: () => _launchYouTube(location.youtubeUrl),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: whiteColor,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x19000000),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
+                      onTap: () {
+                        _launchYouTube(location.youtubeUrl);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 180,
+                            decoration: BoxDecoration(
+                              color: whiteColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x19000000),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Stack(
-                            children: [
-                              Image.network(
-                                _getYouTubeThumbnail(location.youtubeUrl),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                              Center(
-                                child: Icon(
-                                  Icons.play_circle_fill,
-                                  color: whiteColor.withOpacity(0.8),
-                                  size: 40,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 8,
-                                left: 8,
-                                right: 8,
-                                child: Text(
-                                  location.name,
-                                  style: primaryTextStyle.copyWith(
-                                    color: whiteColor,
-                                    fontSize: 12,
-                                    fontWeight: semibold,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 4,
-                                        color: blackColor.withOpacity(0.5),
-                                        offset: const Offset(1, 1),
-                                      ),
-                                    ],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    location.thumbnailUrl,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
+                                  Center(
+                                    child: Icon(
+                                      Icons.play_circle_fill,
+                                      color: whiteColor.withOpacity(0.8),
+                                      size: 40,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            location.name,
+                            style: primaryTextStyle.copyWith(
+                              color: blackColor,
+                              fontSize: 14,
+                              fontWeight: semibold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     );
                   },

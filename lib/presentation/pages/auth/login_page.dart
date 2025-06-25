@@ -241,8 +241,16 @@ class _LoginPageState extends State<LoginPage> {
                         height: 35,
                       ),
                       CustomTextField(
+                        prefix: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 5),
+                          child: Icon(
+                            Icons.mail_outline,
+                            color: primaryColor500,
+                            size: 14,
+                          ),
+                        ),
                         labelText: 'Email',
-                        hintText: 'Cth: example@gmail.com',
+                        hintText: 'example@gmail.com',
                         keyboardType: TextInputType.emailAddress,
                         textFieldType: CustomTextFieldType.outline,
                         controller: emailController,
@@ -252,8 +260,16 @@ class _LoginPageState extends State<LoginPage> {
                         height: 15,
                       ),
                       CustomTextField(
+                        prefix: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 5),
+                          child: Icon(
+                            Icons.lock_outline,
+                            color: primaryColor500,
+                            size: 14,
+                          ),
+                        ),
                         labelText: 'Kata Sandi',
-                        hintText: 'Masukan kata sandi',
+                        hintText: '************',
                         isObscure: _isObscure,
                         isPassword: true,
                         keyboardType: TextInputType.visiblePassword,
@@ -292,16 +308,29 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      InkWell(
-                        onTap: handleGuestLogin,
-                        child: Text(
-                          'Login as Guest',
-                          style: primaryTextStyle.copyWith(
-                            color: primaryColor800,
-                            fontWeight: semibold,
-                            fontSize: 12,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tidak Punya Akun? ',
+                            style: primaryTextStyle.copyWith(
+                              color: subtitleTextColor,
+                              fontWeight: regular,
+                              fontSize: 12,
+                            ),
                           ),
-                        ),
+                          InkWell(
+                            onTap: handleGuestLogin,
+                            child: Text(
+                              'Masuk Sebagai Tamu',
+                              style: primaryTextStyle.copyWith(
+                                color: primaryColor800,
+                                fontWeight: semibold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          )
+                        ],
                       )
 
                       // Row(
