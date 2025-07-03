@@ -100,7 +100,28 @@ class _PengajuanDocumentPageState extends State<PengajuanDocumentPage> {
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'pdf', 'doc'],
+      allowedExtensions: [
+        'png',
+        'jpg',
+        'jpeg',
+        'gif',
+        'bmp',
+        'webp',
+        'mp4',
+        'mov',
+        'avi',
+        'mkv',
+        'wmv',
+        'flv',
+        'pdf',
+        'doc',
+        'docx',
+        'txt',
+        'xls',
+        'xlsx',
+        'ppt',
+        'pptx'
+      ],
     );
 
     if (result != null) {
